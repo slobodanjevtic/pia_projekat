@@ -1,4 +1,11 @@
-body {
-  display: flex;
-  justify-content: center;
+
+footer {
+  position: absolute;
+  background-color: #777;
+  bottom: 0;
+  width:99%;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  text-align: center;
+  color: white;
 }

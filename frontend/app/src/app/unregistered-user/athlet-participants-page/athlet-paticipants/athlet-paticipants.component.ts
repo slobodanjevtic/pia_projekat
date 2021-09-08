@@ -12,4 +12,19 @@ export class AthletPaticipantsComponent implements OnInit {
   ngOnInit(): void {
   }
 
+  athlets: Athlet[];
+  nations: Nation[];
+  sports: Sport[];
+  disciplines: SportDiscipline[];
+
+  name: string;
+  nation: string;
+  sport: string;
+  discipline: string;
+  gender: string;
+  onlyMedalists: boolean;
+
+  search() {
+
+  }
 }

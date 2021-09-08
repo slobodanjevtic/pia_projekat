@@ -12,4 +12,17 @@ export class CompetitionFormationComponent implements OnInit {
   ngOnInit(): void {
   }
 
+  sports: Sport[];
+  disciplines: Discipline[];
+  delegates: Delegate[];
+  athletes: Athlete[];
+
+  sport: string;
+  discipline: string;
+  gender: string;
+  delegate: string;
+
+  save() {
+
+  }
 }

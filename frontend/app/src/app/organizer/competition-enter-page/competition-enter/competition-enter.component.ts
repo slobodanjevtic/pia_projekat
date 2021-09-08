@@ -12,4 +12,20 @@ export class CompetitionEnterComponent implements OnInit {
   ngOnInit(): void {
   }
 
+  sports: Sport[];
+  disciplines: Discipline[];
+  locations: EventLocation[];
+  competitions: Competition[];
+
+  sport: string;
+  discipline: string;
+  gender: string;
+  startDate: Date;
+  endDate: Date;
+  location: string;
+
+  addCompetition() {
+
+  }
+
 }

@@ -1,1 +1,59 @@
-<p>competition-formation works!</p>
+<table>
+  <tr>
+    <td>Sport:</td>
+    <td>
+      <select id='sport' name='sport' [(ngModel)]='sport'>
+        <option *ngFor="let spr of sports">
+
+        </option>
+      </select>
+    </td>
+  </tr>
+  <tr>
+    <td>Discipline:</td>
+    <td>
+      <select id='discipline' name='discipline' [(ngModel)]='discipline'>
+        <option *ngFor="let dis of disciplines">
+
+        </option>
+      </select>
+    </td>
+  </tr>
+  <tr>
+    <td>Gender:</td>
+    <td>
+      <input type="radio" name="gender" value="M" [(ngModel)]='gender'>M
+      <input type="radio" name="gender" value="F" [(ngModel)]='gender'>F
+    </td>
+  </tr>
+  <tr>
+    <td>Delegate:</td>
+    <td>
+      <select id='delegate' name='delegate' [(ngModel)]='delegate'>
+        <option *ngFor="let del of delegates">
+
+        </option>
+      </select>
+    </td>
+  </tr>
+  <tr>
+    <td></td>
+    <td>
+        <button (click)='save()'>Save</button>
+    </td>
+  </tr>
+</table>
+<br/>
+<table>
+  <tr>
+      <td>Flag</td> |
+      <td>Nation</td> |
+      <td>Athlete</td>
+  </tr>
+  <tr *ngFor="let ath of athletes">
+    <td>{{ath.flag}}</td>
+    <td>{{ath.antion}}</td>
+    <td>{{ath.name}}</td>
+  </tr>
+
+</table>

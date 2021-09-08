@@ -1,1 +1,42 @@
-<p>sport-enter works!</p>
+<table>
+  <tr>
+    <td>Sport:</td>
+    <td>
+      <select id='sport' name='sport' [(ngModel)]='sport'>
+        <option *ngFor="let spr of sports">
+
+        </option>
+      </select>
+    </td>
+  </tr>
+  <tr>
+    <td>Discipline:</td>
+    <td>
+      <select id='discipline' name='discipline' [(ngModel)]='discipline'>
+        <option *ngFor="let dis of disciplines">
+
+        </option>
+      </select>
+    </td>
+  </tr>
+  <tr>
+      <td>
+          <button (click)='enterSport()'>Enter</button>
+      </td>
+  </tr>
+  <br/>
+</table>
+
+<table>
+  <tr>
+    <td>Sport</td> |
+    <td>Discipline</td>
+  </tr>
+  <tr *ngFor="let dis of disciplines">
+    <div *ngIf="dis.selected">
+      <td>{{dis.sport}}</td>
+      <td>{{dis.discipline}}</td>
+    </div>
+
+  </tr>
+</table>

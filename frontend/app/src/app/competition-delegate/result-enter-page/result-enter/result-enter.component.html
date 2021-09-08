@@ -1,1 +1,50 @@
-<p>result-enter works!</p>
+<table>
+  <tr>
+    <td>Sport:</td>
+    <td>
+      <select id='sport' name='sport' [(ngModel)]='sport'>
+        <option *ngFor="let spr of sports">
+
+        </option>
+      </select>
+    </td>
+  </tr>
+  <tr>
+    <td>Discipline:</td>
+    <td>
+      <select id='discipline' name='discipline' [(ngModel)]='discipline'>
+        <option *ngFor="let dis of disciplines">
+
+        </option>
+      </select>
+    </td>
+  </tr>
+  <tr>
+    <td>Gender:</td>
+    <td>
+      <input type="radio" name="gender" value="M" [(ngModel)]='gender'>M
+      <input type="radio" name="gender" value="F" [(ngModel)]='gender'>F
+    </td>
+  </tr>
+  <tr>
+    <td></td>
+    <td>
+        <button (click)='save()'>Save</button>
+    </td>
+  </tr>
+</table>
+<br/>
+<table>
+  <tr>
+      <td>Match</td> |
+      <td>Round</td> |
+      <td>Result</td>
+  </tr>
+  <tr *ngFor="let mat of matches">
+    <td>{{mat.match}}</td>
+    <td>{{mat.round}}</td>
+    <td>
+      <input type="text" name="result" value="{{mat.result}}" [(ngModel)]='mat.result'>
+    </td>
+  </tr>
+</table>

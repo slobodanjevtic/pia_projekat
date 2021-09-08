@@ -12,4 +12,16 @@ export class RegisterComponent implements OnInit {
   ngOnInit(): void {
   }
 
+  nations: string[];
+  username: string;
+  password: string;
+  name: string;
+  surname: string;
+  nation: string;
+  email: string;
+  user_type: string;
+
+  register() {
+
+  }
 }

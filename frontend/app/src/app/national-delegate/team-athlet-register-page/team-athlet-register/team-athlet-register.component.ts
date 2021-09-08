@@ -12,4 +12,25 @@ export class TeamAthletRegisterComponent implements OnInit {
   ngOnInit(): void {
   }
 
+  sports: Sport[];
+  disciplines: Discipline[];
+  athletes: Athlete[];
+
+  sport: string;
+  discipline: string;
+  gender: string;
+  name: string;
+  surname: string;
+
+  addAthlete() {
+
+  }
+
+  uploadFile() {
+
+  }
+
+  removeAthlete(athlete: Athlete) {
+
+  }
 }

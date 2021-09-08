@@ -1,0 +1,30 @@
+
+<header>
+  <h1 routerLink="">Welcome to Summer Olympics 2021 in Tokyo</h1>
+  <h4 *ngIf="user == null">
+    <a routerLink="medals">Medals</a> |
+    <a routerLink="nation-paticipants">Nations</a> |
+    <a routerLink="athlet-paticipants">Athlets</a>
+    <button (click)="login()">Login</button>
+  </h4>
+  <div *ngIf="user != null">
+    <h4 *ngIf="user.type == 'organizer'">
+      <a routerLink="sport-enter">Enter sports</a> |
+      <a routerLink="competition-enter">Enter competitions</a> |
+      <a routerLink="competition-formation">Select competitors</a> |
+      <a routerLink="register-requests">Register requests</a>
+      <button (click)="logout()">Logout</button>
+    </h4>
+    <h4 *ngIf="user.type == 'competition-delegate'">
+      <a routerLink="draw-formation">Draws</a> |
+      <a routerLink="schedule-formation">Schedule</a> |
+      <a routerLink="result-enter">Results</a>
+      <button (click)="logout()">Logout</button>
+    </h4>
+    <h4 *ngIf="user.type == 'national-delegate'">
+      <a routerLink="team-athlet-register">Register</a>
+      <button (click)="logout()">Logout</button>
+    </h4>
+  </div>
+
+</header>

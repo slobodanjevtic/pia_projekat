@@ -1,1 +1,72 @@
-<p>team-athlet-register works!</p>
+<table>
+  <tr>
+    <td>Sport:</td>
+    <td>
+      <select id='sport' name='sport' [(ngModel)]='sport'>
+        <option *ngFor="let spr of sports">
+
+        </option>
+      </select>
+    </td>
+  </tr>
+  <tr>
+    <td>Discipline:</td>
+    <td>
+      <select id='discipline' name='discipline' [(ngModel)]='discipline'>
+        <option *ngFor="let dis of disciplines">
+
+        </option>
+      </select>
+    </td>
+  </tr>
+  <tr>
+    <td>Gender:</td>
+    <td>
+      <input type="radio" name="gender" value="M" [(ngModel)]='gender'>M
+      <input type="radio" name="gender" value="F" [(ngModel)]='gender'>F
+    </td>
+  </tr>
+  <tr>
+  <tr>
+    <td>Name:</td>
+    <td>
+        <input type='text' name='name' [(ngModel)]='name'>
+    </td>
+  </tr>
+  <tr>
+    <td>Surname:</td>
+    <td>
+        <input type='text' name='surname' [(ngModel)]='surname'>
+    </td>
+  </tr>
+  <tr>
+    <td></td>
+    <td>
+        <button (click)='addAthlete()'>Add</button>
+    </td>
+  </tr>
+  <tr>
+    <td></td>
+    <td>
+      <button (click)='uploadFile()'>Upload file</button>
+    </td>
+  </tr>
+</table>
+<br/>
+<table>
+  <tr>
+    <td>Sport</td> |
+    <td>Discipline</td> |
+    <td>Name</td> |
+    <td>Surname</td>
+  </tr>
+  <tr *ngFor="let ath of athletes">
+    <td>{{ath.sport}}</td>
+    <td>{{ath.discipline}}</td>
+    <td>{{ath.name}}</td>
+    <td>{{ath.surname}}</td>
+    <td>
+      <button (click)='removeAthlete(ath)'>Remove</button>
+    </td>
+  </tr>
+</table>

@@ -12,4 +12,15 @@ export class ResultEnterComponent implements OnInit {
   ngOnInit(): void {
   }
 
+  sports: Sport[];
+  disciplines: Discipline[];
+  matches: Match[];
+
+  sport: string;
+  discipline: string;
+  gender: string;
+
+  save() {
+
+  }
 }

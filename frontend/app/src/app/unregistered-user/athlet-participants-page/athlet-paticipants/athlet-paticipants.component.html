@@ -1,1 +1,80 @@
-<p>athlet-paticipants works!</p>
+<table>
+  <tr>
+      <td>Name:</td>
+      <td>
+          <input type='text' name='name' [(ngModel)]='name'>
+      </td>
+  </tr>
+  <tr>
+    <td>Nation:</td>
+    <td>
+      <select id='nation' name='nation' [(ngModel)]='nation'>
+        <option *ngFor="let nat of nations">
+
+        </option>
+      </select>
+    </td>
+  </tr>
+  <tr>
+    <td>Sport:</td>
+    <td>
+      <select id='sport' name='sport' [(ngModel)]='sport'>
+        <option *ngFor="let spr of sports">
+
+        </option>
+      </select>
+    </td>
+  </tr>
+  <tr>
+    <td>Discipline:</td>
+    <td>
+      <select id='discipline' name='discipline' [(ngModel)]='discipline'>
+        <option *ngFor="let dis of disciplines">
+
+        </option>
+      </select>
+    </td>
+  </tr>
+  <tr>
+    <td>Gender:</td>
+    <td>
+      <input type="radio" name="gender" value="M" [(ngModel)]='gender'>M
+      <input type="radio" name="gender" value="F" [(ngModel)]='gender'>F
+    </td>
+  </tr>
+  <tr>
+    <td></td>
+    <td>
+      <input type="checkbox" name="medals" [(ngModel)]='onlyMedalists'> Show only medal winners
+    </td>
+  </tr>
+
+  <tr>
+    <td></td>
+    <td>
+        <button (click)='search()'>Search</button>
+    </td>
+  </tr>
+</table>
+<br/>
+<table>
+  <tr>
+      <td>Rang</td> |
+      <td>Nation</td> |
+      <td>Athlete</td> |
+      <td>Gold medals</td> |
+      <td>Silver medals</td> |
+      <td>Bronze medals</td> |
+      <td>Total medals</td>
+  </tr>
+  <tr *ngFor="let ath of athlets">
+    <td>{{ath.rang}}</td>
+    <td>{{ath.nation}}</td>
+    <td>{{ath.name}}</td>
+    <td>{{ath.gold}}</td>
+    <td>{{ath.silver}}</td>
+    <td>{{ath.bronze}}</td>
+    <td>{{ath.gold + ath.silver + ath.bronze}}</td>
+  </tr>
+
+</table>

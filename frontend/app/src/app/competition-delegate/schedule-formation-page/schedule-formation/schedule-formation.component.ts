@@ -12,4 +12,17 @@ export class ScheduleFormationComponent implements OnInit {
   ngOnInit(): void {
   }
 
+  sports: Sport[];
+  disciplines: Discipline[];
+  matches: Match[];
+  locations: EventLocation[];
+
+  sport: string;
+  discipline: string;
+  gender: string;
+  location: string;
+
+  save() {
+
+  }
 }

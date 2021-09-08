@@ -12,4 +12,14 @@ export class DrawFormationComponent implements OnInit {
   ngOnInit(): void {
   }
 
+  sports: Sport[];
+  disciplines: Dicipline[];
+
+  sport: string;
+  discipline: string;
+  gender: string;
+
+  generateDraw() {
+
+  }
 }

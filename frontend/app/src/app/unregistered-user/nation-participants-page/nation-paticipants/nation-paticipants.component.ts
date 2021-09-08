@@ -12,4 +12,5 @@ export class NationPaticipantsComponent implements OnInit {
   ngOnInit(): void {
   }
 
+  nations: Nation[];
 }

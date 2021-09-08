@@ -12,4 +12,5 @@ export class MedalsComponent implements OnInit {
   ngOnInit(): void {
   }
 
+  nations: Nation[];
 }

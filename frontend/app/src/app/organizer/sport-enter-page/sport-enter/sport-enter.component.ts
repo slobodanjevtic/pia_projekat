@@ -12,4 +12,14 @@ export class SportEnterComponent implements OnInit {
   ngOnInit(): void {
   }
 
+  sports: Sport[];
+  disciplines: Discipline[];
+
+  sport: string;
+  discipline: string;
+
+  enterSport() {
+
+  }
+
 }
