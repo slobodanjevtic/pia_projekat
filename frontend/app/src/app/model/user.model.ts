@@ -1,6 +1,11 @@
 export class User {
-  constructor(type: string) {
-    this.type = type;
-  }
+  id: number;
+  username: string;
+  password: string;
+  name: string;
+  surname: string;
+  email: string;
   type: string;
+  status: string;
+  idNation: number;
 }

@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { Sport } from 'src/app/model/sport.model';
+import { Discipline } from 'src/app/model/discipline.model';
 
 @Component({
   selector: 'app-draw-formation',
@@ -13,7 +15,7 @@ export class DrawFormationComponent implements OnInit {
   }
 
   sports: Sport[];
-  disciplines: Dicipline[];
+  disciplines: Discipline[];
 
   sport: string;
   discipline: string;

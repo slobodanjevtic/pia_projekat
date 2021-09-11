@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { Sport } from 'src/app/model/sport.model';
+import { Discipline } from 'src/app/model/discipline.model';
 
 @Component({
   selector: 'app-sport-enter',

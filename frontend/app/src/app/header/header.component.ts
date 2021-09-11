@@ -12,12 +12,7 @@ export class HeaderComponent implements OnInit {
 
   constructor(private router: Router, private userService: UserService) {
     this.userService.loggedInUser.subscribe( u => {
-      if(u == null) {
-        this.user = null;
-      }
-      else {
-        this.user = new User(u);
-      }
+      this.user = u;
     });
   }
 

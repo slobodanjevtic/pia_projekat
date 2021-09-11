@@ -1,4 +1,8 @@
 import { Component, OnInit } from '@angular/core';
+import { Athlete } from 'src/app/model/athlete.model';
+import { Nation } from 'src/app/model/nation.model';
+import { Sport } from 'src/app/model/sport.model';
+import { Discipline } from 'src/app/model/discipline.model';
 
 @Component({
   selector: 'app-athlet-paticipants',
@@ -12,10 +16,10 @@ export class AthletPaticipantsComponent implements OnInit {
   ngOnInit(): void {
   }
 
-  athlets: Athlet[];
+  athlets: Athlete[];
   nations: Nation[];
   sports: Sport[];
-  disciplines: SportDiscipline[];
+  disciplines: Discipline[];
 
   name: string;
   nation: string;

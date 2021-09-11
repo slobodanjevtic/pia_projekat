@@ -24,8 +24,9 @@ export class LoginComponent implements OnInit {
 
   login() {
     //this.userService.login(this.username, this.password).subscribe((u: User) => this.user = u);
-    this.user = new User("national-delegate");
-    this.userService.loggedInUser.next(this.user.type);
+    this.user = new User();
+    this.user.type = "national-delegate";
+    this.userService.loggedInUser.next(this.user);
     sessionStorage.setItem("user", JSON.stringify(this.user));
     this.router.navigate(['']);
   }
