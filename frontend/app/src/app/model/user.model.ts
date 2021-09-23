@@ -6,6 +6,6 @@ export class User {
   surname: string;
   email: string;
   type: string;
-  status: string;
+  status: number;
   idNation: number;
 }

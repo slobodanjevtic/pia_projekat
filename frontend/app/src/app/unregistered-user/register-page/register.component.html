@@ -28,7 +28,7 @@
     <td>
       <select id='nation' name='nation' [(ngModel)]='nation'>
         <option *ngFor="let nat of nations">
-
+          {{nat.name}}
         </option>
       </select>
     </td>
@@ -54,3 +54,4 @@
     </td>
   </tr>
 </table>
+<span class="error">{{errorMessage}}</span>

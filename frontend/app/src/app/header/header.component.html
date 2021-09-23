@@ -15,13 +15,13 @@
       <a routerLink="register-requests">Register requests</a>
       <button (click)="logout()">Logout</button>
     </h4>
-    <h4 *ngIf="user.type == 'competition-delegate'">
+    <h4 *ngIf="user.type == 'competition_delegate'">
       <a routerLink="draw-formation">Draws</a> |
       <a routerLink="schedule-formation">Schedule</a> |
       <a routerLink="result-enter">Results</a>
       <button (click)="logout()">Logout</button>
     </h4>
-    <h4 *ngIf="user.type == 'national-delegate'">
+    <h4 *ngIf="user.type == 'national_delegate'">
       <a routerLink="team-athlet-register">Register</a>
       <button (click)="logout()">Logout</button>
     </h4>

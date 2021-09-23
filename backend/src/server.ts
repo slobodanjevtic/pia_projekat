@@ -3,6 +3,7 @@ import cors from 'cors'
 import bodyParser from 'body-parser'
 import mongoose from 'mongoose';
 import user from './model/user';
+import nation from './model/nation';
 
 const app = express();
 
@@ -79,7 +80,13 @@ router.route('/getDisciplineForCompetition').post((req, res) => {
 });
 
 router.route('/getAllNations').get((req, res) => {
-
+  nation.find({}, (err, nations) => {
+    if(err)  {
+      console.log(err);
+      res.status(400);
+    }
+    else res.json(nations);
+  }).sort({'name': 1});
 });
 
 router.route('/getNation').post((req, res) => {
@@ -155,9 +162,38 @@ router.route('/register').post((req, res) => {
   let password = req.body.password;
   let name = req.body.name;
   let surname = req.body.surname;
-  let nation = req.body.nation;
+  let nat = req.body.nation;
   let email = req.body.email;
   let type = req.body.type;
+
+  user.findOne({}, (err, usr) => {
+    if(err) {
+      console.log(err);
+      res.status(400);
+    } 
+    else {
+      nation.findOne({'name': nat}, (err, nt) => {
+        if(err) {
+          console.log(err);
+          res.status(400);
+        }
+        else {
+          user.collection.insertOne({'id': usr.get('id') + 1, 'username': username, 'password': password, 
+                                    'name': name, 'surname': surname, 'nation': nt.get('id'), 
+                                    'email': email, 'type': type, 'staus': 0}, (err, u) => {
+            if(err) {
+              console.log(err);
+              res.status(400);
+            }         
+            else {
+              res.json({"message": "OK"});
+            }                 
+          });
+        }
+      })
+
+    }
+  }).sort({'id': -1}).limit(1);
 });
 
 router.route('/getAllUsers').get((req, res) => {

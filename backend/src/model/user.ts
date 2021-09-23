@@ -25,7 +25,7 @@ let User = new Schema({
         type: String
     },
     status: {
-        type: String
+        type: Number
     },
     idNation: {
         type: Number
