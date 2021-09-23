@@ -14,21 +14,33 @@ export class LoginComponent implements OnInit {
 
   ngOnInit(): void {
     sessionStorage.clear();
-    this.user = null;
     this.userService.loggedInUser.next(null);
   }
 
   username: string;
   password: string;
-  user: User;
+
+  errorMessage: string;
 
   login() {
-    //this.userService.login(this.username, this.password).subscribe((u: User) => this.user = u);
-    this.user = new User();
-    this.user.type = "national-delegate";
-    this.userService.loggedInUser.next(this.user);
-    sessionStorage.setItem("user", JSON.stringify(this.user));
-    this.router.navigate(['']);
+    if(this.username == null || this.password == null) {
+      this.errorMessage = "You must enter username and password";
+    }
+    else {
+      this.userService.login(this.username, this.password).subscribe((u: User) => {
+        if(u != null) {
+          this.userService.loggedInUser.next(u);
+          sessionStorage.setItem('user', JSON.stringify(u));
+          this.router.navigate(['']);
+        }
+        else {
+          this.errorMessage = "No such a user";
+        }
+
+      });
+    }
+
+
   }
 
 

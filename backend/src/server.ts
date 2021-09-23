@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors'
 import bodyParser from 'body-parser'
 import mongoose from 'mongoose';
+import user from './model/user';
 
 const app = express();
 
@@ -142,6 +143,11 @@ router.route('/updateDiscipline').post((req, res) => {
 router.route('/login').post((req, res) => {
   let username = req.body.username;
   let password = req.body.password;
+
+  user.findOne({'username': username, 'password': password}, (err, user) => {
+    if(err) console.log(err);
+    else res.json(user);
+  })
 });
 
 router.route('/register').post((req, res) => {
