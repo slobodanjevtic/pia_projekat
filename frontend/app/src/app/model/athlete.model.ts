@@ -5,4 +5,7 @@ export class Athlete {
   gender: string;
   idSport: number;
   idNation: number;
+  gold: number;
+  silver: number;
+  bronze: number;
 }

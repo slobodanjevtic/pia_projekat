@@ -9,11 +9,8 @@ let Discipline = new Schema({
     name: {
         type: String
     },
-    numOfPlayers: {
-        type: Number
-    },
     status: {
-        type: String
+        type: Number
     },
     idSport: {
         type: Number

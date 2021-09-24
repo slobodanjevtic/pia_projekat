@@ -1,19 +1,20 @@
 <table>
   <tr>
-      <td>Rang</td> |
-      <td>Nation</td> |
-      <td>Gold medals</td> |
-      <td>Silver medals</td> |
-      <td>Bronze medals</td> |
-      <td>Total medals</td>
+      <td>Rang</td>
+      <td>| Nation</td>
+      <td>| Gold medals</td>
+      <td>| Silver medals</td>
+      <td>| Bronze medals</td>
+      <td>| Total medals</td>
   </tr>
   <tr *ngFor="let nat of nations">
-    <td>{{nat.rang}}</td>
-    <td>{{nat.nation}}</td>
-    <td>{{nat.gold}}</td>
-    <td>{{nat.silver}}</td>
-    <td>{{nat.bronze}}</td>
-    <td>{{nat.gold + nat.silver + nat.bronze}}</td>
+    <td>1</td>
+    <td>| {{nat.name}}</td>
+    <td>| {{nat.gold}}</td>
+    <td>| {{nat.silver}}</td>
+    <td>| {{nat.bronze}}</td>
+    <td>| {{nat.gold + nat.silver + nat.bronze}}</td>
   </tr>
+
 
 </table>

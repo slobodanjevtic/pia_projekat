@@ -1,13 +1,15 @@
 <table>
   <tr>
-      <td>Flag</td> |
-      <td>Nation</td> |
-      <td>Number of participants</td>
+      <td>Flag</td>
+      <td>| Nation</td>
+      <td>| Number of participants</td>
   </tr>
   <tr *ngFor="let nat of nations">
-    <td>{{nat.flag}}</td>
-    <td>{{nat.nation}}</td>
-    <td>{{nat.numOfParticipans}}</td>
+    <td>
+      <img src='{{"assets/flags/"+nat.flag}}' width="30px">
+    </td>
+    <td>| {{nat.name}}</td>
+    <td>| {{nat.numOfAthletes}}</td>
   </tr>
 
 </table>

@@ -9,8 +9,12 @@ export class AthleteService {
 
   uri = 'http://localhost:4000'
 
-  getAll() {
+  getAllAthletes() {
     return this.http.get(`${this.uri}/getAllAthletes`);
+  }
+
+  getAllAthletesWithMedals() {
+    return this.http.get(`${this.uri}/getAllAthletesWithMedals`);
   }
 
   insert(sport, discipline, gender, name, surname) {

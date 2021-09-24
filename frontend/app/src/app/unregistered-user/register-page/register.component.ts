@@ -29,7 +29,7 @@ export class RegisterComponent implements OnInit {
   errorMessage: string;
 
   getAllNations() {
-    this.nationService.getAll().subscribe((nat: Nation[]) => {
+    this.nationService.getAllNations().subscribe((nat: Nation[]) => {
       this.nations = nat;
     })
   }

@@ -20,6 +20,15 @@ let Athlete = new Schema({
     },
     idNation: {
         type: Number
+    },
+    gold: {
+        type: Number
+    },
+    silver: {
+        type: Number
+    },
+    bronze: {
+        type: Number
     }
 }) 
 

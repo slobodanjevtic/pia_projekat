@@ -26,6 +26,10 @@ router.route('/getAllAthletes').get((req, res) => {
 
 });
 
+router.route('/getAllAthletesWithMedals').get((req, res) => {
+  
+});
+
 router.route('/insertAthlete').post((req, res) => {
   let sport = req.body.sport;
   let discipline = req.body.discipline;
@@ -87,6 +91,132 @@ router.route('/getAllNations').get((req, res) => {
     }
     else res.json(nations);
   }).sort({'name': 1});
+});
+
+router.route('/getNationsWithAthletes').get((req, res) => {
+  nation.aggregate(
+    [
+      { 
+          "$project" : { 
+              "_id" : 0, 
+              "n" : "$$ROOT"
+          }
+      }, 
+      { 
+          "$lookup" : { 
+              "localField" : "n.id", 
+              "from" : "Athletes", 
+              "foreignField" : "idNation", 
+              "as" : "a"
+          }
+      }, 
+      { 
+          "$unwind" : { 
+              "path" : "$a", 
+              "preserveNullAndEmptyArrays" : false
+          }
+      }, 
+      { 
+          "$group" : { 
+              "_id" : { 
+                  "n᎐flag" : "$n.flag", 
+                  "n᎐name" : "$n.name"
+              }, 
+              "COUNT(a᎐id)" : { 
+                  "$sum" : 1
+              }
+          }
+      }, 
+      { 
+          "$project" : { 
+              "flag" : "$_id.n᎐flag", 
+              "name" : "$_id.n᎐name", 
+              "numOfAthletes" : "$COUNT(a᎐id)", 
+              "_id" : 0
+          }
+      }
+  ], (err: any, nat: any) => {
+      if(err) {
+        res.status(400);
+      }
+      else {
+        res.json(nat);
+      }
+  })
+});
+
+router.route('/getNationsWithMedals').get((req, res) => {
+  nation.aggregate(
+    [
+      { 
+          "$project" : { 
+              "_id" : 0, 
+              "n" : "$$ROOT"
+          }
+      }, 
+      { 
+          "$lookup" : { 
+              "localField" : "n.id", 
+              "from" : "Athletes", 
+              "foreignField" : "idNation", 
+              "as" : "a"
+          }
+      }, 
+      { 
+          "$unwind" : { 
+              "path" : "$a", 
+              "preserveNullAndEmptyArrays" : false
+          }
+      }, 
+      { 
+          "$group" : { 
+              "_id" : { 
+                  "n᎐name" : "$n.name"
+              }, 
+              "SUM(a᎐gold)" : { 
+                  "$sum" : "$a.gold"
+              }, 
+              "SUM(a᎐silver)" : { 
+                  "$sum" : "$a.silver"
+              }, 
+              "SUM(a᎐bronze)" : { 
+                  "$sum" : "$a.bronze"
+              }
+          }
+      }, 
+      { 
+          "$project" : { 
+              "n.name" : "$_id.n᎐name", 
+              "SUM(a.gold)" : "$SUM(a᎐gold)", 
+              "SUM(a.silver)" : "$SUM(a᎐silver)", 
+              "SUM(a.bronze)" : "$SUM(a᎐bronze)", 
+              "_id" : 0
+          }
+      }, 
+      { 
+          "$sort" : { 
+              "SUM(a.gold)" : 1, 
+              "SUM(a.silver)" : 1, 
+              "SUM(a.bronze)" : 1
+          }
+      }, 
+      { 
+          "$project" : { 
+              "_id" : 0, 
+              "name" : "$n.name", 
+              "gold" : "$SUM(a.gold)", 
+              "silver" : "$SUM(a.silver)", 
+              "bronze" : "$SUM(a.bronze)"
+          }
+      }
+  ], (err: any, nat: any) => {
+      if(err) {
+        res.status(400);
+      }
+      else {
+        res.json(nat);
+      }
+  })
 });
 
 router.route('/getNation').post((req, res) => {

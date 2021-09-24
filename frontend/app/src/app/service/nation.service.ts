@@ -9,11 +9,20 @@ export class NationService {
 
   uri = 'http://localhost:4000'
 
-  getAll() {
+  getAllNations() {
     return this.http.get(`${this.uri}/getAllNations`);
   }
 
-  get(idNation) {
+  getNationsWithAthletes() {
+    return this.http.get(`${this.uri}/getNationsWithAthletes`);
+  }
+
+  getNationsWithMedals() {
+    return this.http.get(`${this.uri}/getNationsWithMedals`);
+  }
+
+
+  getNation(idNation) {
     const data = {
       id: idNation
     }

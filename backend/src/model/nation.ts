@@ -8,6 +8,9 @@ let Nation = new Schema({
     },
     name: {
         type: String
+    },
+    flag: {
+        type: String
     }
 }) 
 

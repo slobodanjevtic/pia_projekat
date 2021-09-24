@@ -1,7 +1,6 @@
 export class Discipline {
   id: number;
   name: string;
-  numOfPlayers: number;
-  status: string;
+  status: number;
   idSport: number;
 }
