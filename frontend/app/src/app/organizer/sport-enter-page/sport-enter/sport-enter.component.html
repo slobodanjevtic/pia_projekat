@@ -1,10 +1,22 @@
 <table>
   <tr>
+    <td>New sport:</td>
+    <td>
+      <input type='text' name='newSport' [(ngModel)]='newSport'>
+    </td>
+  </tr>
+  <tr>
+    <td>New discipline:</td>
+    <td>
+      <input type='text' name='newDiscipline' [(ngModel)]='newDiscipline'>
+    </td>
+  </tr>
+  <tr>
     <td>Sport:</td>
     <td>
       <select id='sport' name='sport' [(ngModel)]='sport'>
         <option *ngFor="let spr of sports">
-
+          {{spr.name}}
         </option>
       </select>
     </td>
@@ -13,30 +25,33 @@
     <td>Discipline:</td>
     <td>
       <select id='discipline' name='discipline' [(ngModel)]='discipline'>
-        <option *ngFor="let dis of disciplines">
-
-        </option>
+        <ng-container *ngFor="let dis of disciplines">
+          <option *ngIf="dis.sport == sport">
+            {{dis.name}}
+          </option>
+        </ng-container>
       </select>
     </td>
   </tr>
   <tr>
-      <td>
-          <button (click)='enterSport()'>Enter</button>
-      </td>
+    <td>
+        <button (click)='enterSport()'>Enter</button>
+    </td>
   </tr>
-  <br/>
 </table>
+
+<br/>
 
 <table>
   <tr>
-    <td>Sport</td> |
-    <td>Discipline</td>
+    <td>Sport</td>
+    <td>| Discipline</td>
   </tr>
   <tr *ngFor="let dis of disciplines">
-    <div *ngIf="dis.selected">
-      <td>{{dis.sport}}</td>
-      <td>{{dis.discipline}}</td>
-    </div>
-
+      <td *ngIf="dis.status == 1">{{dis.sport}}</td>
+      <td *ngIf="dis.status == 1">| {{dis.name}}</td>
+      <td *ngIf="dis.status == 1">
+        <button (click)='remove(dis.name)'>Remove</button>
+      </td>
   </tr>
 </table>

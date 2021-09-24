@@ -6,6 +6,7 @@ import user from './model/user';
 import nation from './model/nation';
 import sport from './model/sport';
 import discipline from './model/discipline';
+import e from 'express';
 
 const app = express();
 
@@ -373,13 +374,104 @@ router.route('/getAllSports').get((req, res) => {
   }).sort({'name': 1});
 });
 
-router.route('/getAllDisciplines').post((req, res) => {
-  let idSport = req.body.idSport;
+router.route('/getAllDisciplines').get((req, res) => {
+  sport.aggregate([
+    { 
+        "$project" : { 
+            "_id" : 0, 
+            "s" : "$$ROOT"
+        }
+    }, 
+    { 
+        "$lookup" : { 
+            "localField" : "s.id", 
+            "from" : "Disciplines", 
+            "foreignField" : "idSport", 
+            "as" : "d"
+        }
+    }, 
+    { 
+        "$unwind" : { 
+            "path" : "$d", 
+            "preserveNullAndEmptyArrays" : false
+        }
+    },
+    { 
+      "$sort" : { 
+          "d.name" : 1
+      }
+    }, 
+    { 
+        "$project" : { 
+            "sport" : "$s.name", 
+            "status" : "$d.status", 
+            "name" : "$d.name", 
+            "_id" : 0
+        }
+    }
+  ], (err: any, dis: any) => {
+    if(err) {
+      res.status(400);
+    }
+    else {
+      res.json(dis);
+    }
+  })
+
+});
+
+router.route('/addNewSportAndDiscipline').post((req, res) => {
+  let spr = req.body.sport;
+  let dis = req.body.discipline;
+
+
+  sport.findOne({'name': spr}, (err, s) => {
+    if(err) {
+      console.log(err);
+      res.status(400);
+    }
+    else {
+      console.log(s);
+      if(s != null) {
+        discipline.findOne({}, (err, d) => {
+          if(err) {
+            console.log(err);
+            res.status(400);
+          }
+          else {
+            discipline.collection.insertOne({'id': d.get('id')+1, 'name': dis, 'status': 1, 
+                                            'idSport': s.get('id')});
+            res.json({'message': 'OK'});
+          }
+        }).sort({'id': -1}).limit(1);
+      }
+      else {
+        sport.findOne({}, (err, s) => {
+          sport.collection.insertOne({'id': s.get('id')+1, 'name': spr});
+
+          discipline.findOne({}, (err, d) => {
+            if(err) {
+              console.log(err);
+              res.status(400);
+            }
+            else {
+              discipline.collection.insertOne({'id': d.get('id')+1, 'name': dis, 'status': 1, 
+                                              'idSport': s.get('id')+1});
+              res.json({'message': 'OK'});
+            }
+          }).sort({'id': -1}).limit(1);
+        }).sort({'id': -1}).limit(1);
+      }
+    }
+  })
 });
 
 router.route('/updateDiscipline').post((req, res) => {
-  let idDiscipline = req.body.idDiscipline;
+  let dis = req.body.discipline;
   let status = req.body.status;
+
+  discipline.collection.updateOne({'name': dis}, { $set: {'status': status}});
+  res.json({'message': 'OK'});
 });
 
 router.route('/login').post((req, res) => {
@@ -414,8 +506,8 @@ router.route('/register').post((req, res) => {
         }
         else {
           user.collection.insertOne({'id': usr.get('id') + 1, 'username': username, 'password': password, 
-                                    'name': name, 'surname': surname, 'nation': nt.get('id'), 
-                                    'email': email, 'type': type, 'staus': 0}, (err, u) => {
+                                    'name': name, 'surname': surname, 'email': email, 'type': type, 
+                                    'staus': 0, 'idNattion': nt.get('id')}, (err, u) => {
             if(err) {
               console.log(err);
               res.status(400);

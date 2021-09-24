@@ -13,20 +13,25 @@ export class SportService {
     return this.http.get(`${this.uri}/getAllSports`);
   }
 
-  getAllDisciplines(idSport) {
-    const data = {
-      idSport: idSport
-    }
-
-    return this.http.post(`${this.uri}/getAllDisciplines`, data);
+  getAllDisciplines() {
+    return this.http.get(`${this.uri}/getAllDisciplines`);
   }
 
-  updateDiscipline(idDiscipline, status) {
+  updateDiscipline(discipline, status) {
     const data = {
-      idDiscipline: idDiscipline,
+      discipline: discipline,
       status: status
     }
 
     return this.http.post(`${this.uri}/updateDiscipline`, data);
+  }
+
+  addNewSportAndDiscipline(sport, discipline) {
+    const data = {
+      sport: sport,
+      discipline: discipline
+    }
+
+    return this.http.post(`${this.uri}/addNewSportAndDiscipline`, data);
   }
 }
