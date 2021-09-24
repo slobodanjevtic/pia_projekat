@@ -9,7 +9,7 @@ export class SportService {
 
   uri = 'http://localhost:4000'
 
-  getAll() {
+  getAllSports() {
     return this.http.get(`${this.uri}/getAllSports`);
   }
 

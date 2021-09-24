@@ -1,9 +1,11 @@
-import express from 'express';
+import express, { json } from 'express';
 import cors from 'cors'
 import bodyParser from 'body-parser'
 import mongoose from 'mongoose';
 import user from './model/user';
 import nation from './model/nation';
+import sport from './model/sport';
+import discipline from './model/discipline';
 
 const app = express();
 
@@ -27,7 +29,103 @@ router.route('/getAllAthletes').get((req, res) => {
 });
 
 router.route('/getAllAthletesWithMedals').get((req, res) => {
-  
+  nation.aggregate(
+    [
+      { 
+          "$project" : { 
+              "_id" : 0, 
+              "n" : "$$ROOT"
+          }
+      }, 
+      { 
+          "$lookup" : { 
+              "localField" : "n.id", 
+              "from" : "Athletes", 
+              "foreignField" : "idNation", 
+              "as" : "a"
+          }
+      }, 
+      { 
+          "$unwind" : { 
+              "path" : "$a", 
+              "preserveNullAndEmptyArrays" : false
+          }
+      }, 
+      { 
+          "$lookup" : { 
+              "localField" : "a.idSport", 
+              "from" : "Sports", 
+              "foreignField" : "id", 
+              "as" : "s"
+          }
+      }, 
+      { 
+          "$unwind" : { 
+              "path" : "$s", 
+              "preserveNullAndEmptyArrays" : false
+          }
+      }, 
+      { 
+          "$group" : { 
+              "_id" : { 
+                  "a᎐name" : "$a.name", 
+                  "a᎐gender" : "$a.gender", 
+                  "a᎐surname" : "$a.surname", 
+                  "n᎐name" : "$n.name", 
+                  "s᎐name" : "$s.name"
+              }, 
+              "SUM(a᎐gold)" : { 
+                  "$sum" : "$a.gold"
+              }, 
+              "SUM(a᎐silver)" : { 
+                  "$sum" : "$a.silver"
+              }, 
+              "SUM(a᎐bronze)" : { 
+                  "$sum" : "$a.bronze"
+              }
+          }
+      }, 
+      { 
+          "$project" : { 
+              "n.name" : "$_id.n᎐name", 
+              "a.name" : "$_id.a᎐name", 
+              "a.surname" : "$_id.a᎐surname", 
+              "a.gender" : "$_id.a᎐gender", 
+              "s.name" : "$_id.s᎐name", 
+              "SUM(a.gold)" : "$SUM(a᎐gold)", 
+              "SUM(a.silver)" : "$SUM(a᎐silver)", 
+              "SUM(a.bronze)" : "$SUM(a᎐bronze)", 
+              "_id" : 0
+          }
+      }, 
+      { 
+          "$sort" : { 
+              "SUM(a.gold)" : -1, 
+              "SUM(a.silver)" : -1, 
+              "SUM(a.bronze)" : -1
+          }
+      }, 
+      { 
+          "$project" : { 
+              "_id" : 0, 
+              "nation" : "$n.name", 
+              "name" : "$a.name", 
+              "surname" : "$a.surname", 
+              "gender" : "$a.gender", 
+              "sport" : "$s.name", 
+              "gold" : "$SUM(a.gold)", 
+              "silver" : "$SUM(a.silver)", 
+              "bronze" : "$SUM(a.bronze)"
+          }
+      }
+  ], (err: any, ath: any) => {
+      if(err) {
+        res.status(400);
+      }
+      else {
+        res.json(ath);
+      }
+  })
 });
 
 router.route('/insertAthlete').post((req, res) => {
@@ -195,9 +293,9 @@ router.route('/getNationsWithMedals').get((req, res) => {
       }, 
       { 
           "$sort" : { 
-              "SUM(a.gold)" : 1, 
-              "SUM(a.silver)" : 1, 
-              "SUM(a.bronze)" : 1
+              "SUM(a.gold)" : -1, 
+              "SUM(a.silver)" : -1, 
+              "SUM(a.bronze)" : -1
           }
       }, 
       { 
@@ -265,7 +363,14 @@ router.route('/updateEvent').post((req, res) => {
 });
 
 router.route('/getAllSports').get((req, res) => {
-  
+  sport.find({}, (err, spr) => {
+    if(err) {
+      res.status(400);
+    }
+    else {
+      res.json(spr);
+    }
+  }).sort({'name': 1});
 });
 
 router.route('/getAllDisciplines').post((req, res) => {

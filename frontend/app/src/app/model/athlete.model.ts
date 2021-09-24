@@ -3,9 +3,10 @@ export class Athlete {
   name: string;
   surname: string;
   gender: string;
-  idSport: number;
-  idNation: number;
+  sport: string;
+  nation: string;
   gold: number;
   silver: number;
   bronze: number;
+  show: boolean;
 }

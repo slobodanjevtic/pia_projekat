@@ -7,8 +7,8 @@
       <td>| Bronze medals</td>
       <td>| Total medals</td>
   </tr>
-  <tr *ngFor="let nat of nations">
-    <td>1</td>
+  <tr *ngFor="let nat of nations, let i = index">
+    <td>{{i + 1}}</td>
     <td>| {{nat.name}}</td>
     <td>| {{nat.gold}}</td>
     <td>| {{nat.silver}}</td>
