@@ -36,8 +36,8 @@ export class UserService {
     return this.http.post(`${this.uri}/register`, data);
   }
 
-  getAll() {
-    return this.http.get(`${this.uri}/getAllUsers`);
+  getAllPendingUsers() {
+    return this.http.get(`${this.uri}/getAllPendingUsers`);
   }
 
 

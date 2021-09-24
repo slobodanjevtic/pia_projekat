@@ -431,7 +431,6 @@ router.route('/addNewSportAndDiscipline').post((req, res) => {
       res.status(400);
     }
     else {
-      console.log(s);
       if(s != null) {
         discipline.findOne({}, (err, d) => {
           if(err) {
@@ -523,13 +522,60 @@ router.route('/register').post((req, res) => {
   }).sort({'id': -1}).limit(1);
 });
 
-router.route('/getAllUsers').get((req, res) => {
-  
+router.route('/getAllPendingUsers').get((req, res) => {
+  user.aggregate([
+    { 
+        "$project" : { 
+            "_id" : 0, 
+            "u" : "$$ROOT"
+        }
+    }, 
+    { 
+        "$lookup" : { 
+            "localField" : "u.idNation", 
+            "from" : "Nations", 
+            "foreignField" : "id", 
+            "as" : "n"
+        }
+    }, 
+    { 
+        "$unwind" : { 
+            "path" : "$n", 
+            "preserveNullAndEmptyArrays" : false
+        }
+    }, 
+    { 
+      "$match" : { 
+          "u.status" : 0
+      }
+    },
+    { 
+        "$project" : { 
+            "id" : "$u.id", 
+            "name" : "$u.name", 
+            "surname" : "$u.surname", 
+            "nation" : "$n.name", 
+            "email" : "$u.email", 
+            "type" : "$u.type", 
+            "_id" : 0
+        }
+    }
+  ], (err: any, usr: any) => {
+    if(err) {
+      res.status(400);
+    }
+    else {
+      res.json(usr);
+    }
+})
 });
 
 router.route('/updateUser').post((req, res) => {
   let idUser = req.body.idUser;
   let status = req.body.status;
+
+  user.collection.updateOne({'id': idUser}, { $set: {'status': status}});
+  res.json({'message': 'OK'});
 });
 
 router.route('/getCompetitionDelegates').get((req, res) => {

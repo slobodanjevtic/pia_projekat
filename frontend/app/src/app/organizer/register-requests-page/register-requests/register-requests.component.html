@@ -1,17 +1,17 @@
 <table>
   <tr>
-      <td>Name</td> |
-      <td>Surname</td> |
-      <td>Nation</td> |
-      <td>e-mail</td> |
-      <td>Type</td>
+      <td>Name</td>
+      <td>| Surname</td>
+      <td>| Nation</td>
+      <td>| e-mail</td>
+      <td>| Type</td>
   </tr>
   <tr *ngFor="let usr of users">
     <td>{{usr.name}}</td>
-    <td>{{usr.surname}}</td>
-    <td>{{usr.nation}}</td>
-    <td>{{usr.email}}</td>
-    <td>{{usr.type}}</td>
+    <td>| {{usr.surname}}</td>
+    <td>| {{usr.nation}}</td>
+    <td>| {{usr.email}}</td>
+    <td>| {{usr.type}}</td>
     <td>
       <button (click)='accept(usr)'>Accept</button>
     </td>

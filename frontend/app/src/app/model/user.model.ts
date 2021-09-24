@@ -7,5 +7,5 @@ export class User {
   email: string;
   type: string;
   status: number;
-  idNation: number;
+  nation: string;
 }
