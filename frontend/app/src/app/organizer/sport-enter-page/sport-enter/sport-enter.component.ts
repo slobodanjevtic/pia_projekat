@@ -41,19 +41,25 @@ export class SportEnterComponent implements OnInit {
   enterSport() {
     if(this.newDiscipline != null && this.newDiscipline.length > 0) {
         if(this.newSport != null && this.newSport.length > 0) {
-          this.sportService.addNewSportAndDiscipline(this.newSport, this.newDiscipline).subscribe(() => {
-            this.getAllDisciplines();
+          this.sportService.addNewSportAndDiscipline(this.newSport, this.newDiscipline).subscribe((res) => {
+            if(res['message'] == 'OK') {
+              this.getAllDisciplines();
+            }
           })
         }
         else {
-          this.sportService.addNewSportAndDiscipline(this.sport, this.newDiscipline).subscribe(() => {
-            this.getAllDisciplines();
+          this.sportService.addNewSportAndDiscipline(this.sport, this.newDiscipline).subscribe((res) => {
+            if(res['message'] == 'OK') {
+              this.getAllDisciplines();
+            }
           })
         }
       }
       else {
-        this.sportService.updateDiscipline(this.discipline, 1).subscribe(() => {
-          this.getAllDisciplines();
+        this.sportService.updateDiscipline(this.discipline, 1).subscribe((res) => {
+          if(res['message'] == 'OK') {
+            this.getAllDisciplines();
+          }
         })
       }
 
@@ -69,22 +75,24 @@ export class SportEnterComponent implements OnInit {
     this.sportService.getAllSports().subscribe((spr: Sport[]) => {
       this.sports = spr;
       this.sport = this.sports[0].name;
-      console.log(this.sports);
     })
   }
 
   getAllDisciplines() {
     this.sportService.getAllDisciplines().subscribe((dis: Discipline[]) => {
       this.disciplines = dis;
-      for (let i = 0; i < this.disciplines.length; i++) {
-        const d = this.disciplines[i];
-        if(d.sport == this.sport) {
-          this.discipline = d.name;
-          break;
-        }
-      }
-      console.log(this.disciplines);
+      this.selectFirstDiscipline();
     })
+  }
+
+  selectFirstDiscipline() {
+    for (let i = 0; i < this.disciplines.length; i++) {
+      const d = this.disciplines[i];
+      if(d.sport == this.sport) {
+        this.discipline = d.name;
+        break;
+      }
+    }
   }
 
 }

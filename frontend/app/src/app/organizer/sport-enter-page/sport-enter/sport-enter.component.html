@@ -14,7 +14,7 @@
   <tr>
     <td>Sport:</td>
     <td>
-      <select id='sport' name='sport' [(ngModel)]='sport'>
+      <select id='sport' name='sport' [(ngModel)]='sport' (change)="selectFirstDiscipline()">
         <option *ngFor="let spr of sports">
           {{spr.name}}
         </option>
@@ -26,7 +26,7 @@
     <td>
       <select id='discipline' name='discipline' [(ngModel)]='discipline'>
         <ng-container *ngFor="let dis of disciplines">
-          <option *ngIf="dis.sport == sport">
+          <option [ngValue]='dis.name' *ngIf="dis.sport == sport">
             {{dis.name}}
           </option>
         </ng-container>

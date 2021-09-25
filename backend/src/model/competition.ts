@@ -20,6 +20,9 @@ let Competition = new Schema({
     },
     idLocation: {
         type: Number
+    },
+    format: {
+        type: Number
     }
 }) 
 

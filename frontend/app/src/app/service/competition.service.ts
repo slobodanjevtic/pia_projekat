@@ -9,14 +9,14 @@ export class CompetitionService {
 
   uri = 'http://localhost:4000'
 
-  insertCompetition(sport, discipline, gender, startDate, endDate, location) {
+  insertCompetition(discipline, gender, startDate, endDate, location, format) {
     const data = {
-      sport: sport,
       discipline: discipline,
       gender: gender,
       startDate: startDate,
       endDate: endDate,
       location: location,
+      format: format
     }
 
     return this.http.post(`${this.uri}/insertCompetition`, data);
@@ -50,5 +50,13 @@ export class CompetitionService {
     }
 
     return this.http.post(`${this.uri}/getDisciplineForCompetition`, data);
+  }
+
+  getLocations() {
+    return this.http.get(`${this.uri}/getLocations`);
+  }
+
+  getCompetitions() {
+    return this.http.get(`${this.uri}/getCompetitions`);
   }
 }

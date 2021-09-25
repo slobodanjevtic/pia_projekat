@@ -6,7 +6,8 @@ import user from './model/user';
 import nation from './model/nation';
 import sport from './model/sport';
 import discipline from './model/discipline';
-import e from 'express';
+import event_location from './model/event_location';
+import competition from './model/competition';
 
 const app = express();
 
@@ -121,6 +122,7 @@ router.route('/getAllAthletesWithMedals').get((req, res) => {
       }
   ], (err: any, ath: any) => {
       if(err) {
+        console.log(err);
         res.status(400);
       }
       else {
@@ -156,12 +158,60 @@ router.route('/getMedalCount').post((req, res) => {
 });
 
 router.route('/insertCompetition').post((req, res) => {
-  let sport = req.body.sport;
-  let discipline = req.body.discipline;
+  let dis = req.body.discipline;
   let gender = req.body.gender;
   let startDate = req.body.startDate;
   let endDate = req.body.endDate;
   let location = req.body.location;
+  let format = req.body.format;
+
+  discipline.findOne({'name': dis}, (err, d) => {
+    if(err)  {
+      console.log(err);
+      res.status(400);
+    }
+    else {
+      event_location.findOne({'name': location}, (err, loc) => {
+        if(err)  {
+          console.log(err);
+          res.status(400);
+        }
+        else {
+          competition.findOne({'gender': gender, 'idDiscipline': d.get('id')}, (err, di) => {
+            if(di == null) {
+              competition.findOne({}, (err, comp) => {
+                if(err)  {
+                  console.log(err);
+                  res.status(400);
+                }
+                else {
+                  if(comp == null) {
+                    competition.collection.insertOne({'id': 1, 'startDate': startDate, 'endDate': endDate, 
+                                                      'gender': gender, 'idDiscipline': d.get('id'), 
+                                                      'idLocation': loc.get('id'), 'format': format});
+                  }
+                  else {
+                    competition.collection.insertOne({'id': comp.get('id')+1, 'startDate': startDate, 
+                                                      'endDate': endDate, 'gender': gender, 
+                                                      'idDiscipline': d.get('id'), 'idLocation': loc.get('id'), 
+                                                      'format': format});
+                  }
+                  res.json({'message': 'OK'});
+                }
+              }).sort({'id': -1}).limit(1);
+            }
+            else {
+              competition.collection.updateOne({'gender': gender, 'idDiscipline': d.get('id')}, 
+                                                { $set: {'startDate': startDate, 'endDate': endDate, 
+                                                'idLocation': loc.get('id'), 'format': format}});
+              res.json({'message': 'OK'});
+            }
+          })
+
+        }
+      })
+    }
+  })
 });
 
 router.route('/insertCompeting').post((req, res) => {
@@ -236,6 +286,7 @@ router.route('/getNationsWithAthletes').get((req, res) => {
       }
   ], (err: any, nat: any) => {
       if(err) {
+        console.log(err);
         res.status(400);
       }
       else {
@@ -310,6 +361,7 @@ router.route('/getNationsWithMedals').get((req, res) => {
       }
   ], (err: any, nat: any) => {
       if(err) {
+        console.log(err);
         res.status(400);
       }
       else {
@@ -366,6 +418,7 @@ router.route('/updateEvent').post((req, res) => {
 router.route('/getAllSports').get((req, res) => {
   sport.find({}, (err, spr) => {
     if(err) {
+      console.log(err);
       res.status(400);
     }
     else {
@@ -411,6 +464,7 @@ router.route('/getAllDisciplines').get((req, res) => {
     }
   ], (err: any, dis: any) => {
     if(err) {
+      console.log(err);
       res.status(400);
     }
     else {
@@ -478,7 +532,10 @@ router.route('/login').post((req, res) => {
   let password = req.body.password;
 
   user.findOne({'username': username, 'password': password}, (err, user) => {
-    if(err) console.log(err);
+    if(err) {
+      console.log(err);
+      res.status(400);
+    }
     else res.json(user);
   })
 });
@@ -562,6 +619,7 @@ router.route('/getAllPendingUsers').get((req, res) => {
     }
   ], (err: any, usr: any) => {
     if(err) {
+      console.log(err);
       res.status(400);
     }
     else {
@@ -580,6 +638,93 @@ router.route('/updateUser').post((req, res) => {
 
 router.route('/getCompetitionDelegates').get((req, res) => {
   
+});
+
+router.route('/getCompetitions').get((req, res) => {
+  sport.aggregate([
+    { 
+        "$project" : { 
+            "_id" : 0, 
+            "s" : "$$ROOT"
+        }
+    }, 
+    { 
+        "$lookup" : { 
+            "localField" : "s.id", 
+            "from" : "Disciplines", 
+            "foreignField" : "idSport", 
+            "as" : "d"
+        }
+    }, 
+    { 
+        "$unwind" : { 
+            "path" : "$d", 
+            "preserveNullAndEmptyArrays" : false
+        }
+    }, 
+    { 
+        "$lookup" : { 
+            "localField" : "d.id", 
+            "from" : "Competitions", 
+            "foreignField" : "idDiscipline", 
+            "as" : "c"
+        }
+    }, 
+    { 
+        "$unwind" : { 
+            "path" : "$c", 
+            "preserveNullAndEmptyArrays" : false
+        }
+    }, 
+    { 
+        "$lookup" : { 
+            "localField" : "c.idLocation", 
+            "from" : "EventLocations", 
+            "foreignField" : "id", 
+            "as" : "l"
+        }
+    }, 
+    { 
+        "$unwind" : { 
+            "path" : "$l", 
+            "preserveNullAndEmptyArrays" : false
+        }
+    }, 
+    { 
+      "$sort" : { 
+          "c.startDate" : 1
+      }
+    },
+    { 
+        "$project" : { 
+            "sport" : "$s.name", 
+            "discipline" : "$d.name", 
+            "gender" : "$c.gender", 
+            "startDate" : "$c.startDate", 
+            "endDate" : "$c.endDate", 
+            "location" : "$l.name", 
+            "_id" : 0
+        }
+    }
+  ], (err: any, usr: any) => {
+    if(err) {
+      console.log(err);
+      res.status(400);
+    }
+    else {
+      res.json(usr);
+    }
+  })
+});
+
+router.route('/getLocations').get((req, res) => {
+  event_location.find({}, (err, loc) => {
+    if(err) {
+      console.log(err);
+      res.status(400);
+    }
+    else res.json(loc);
+  })
 });
 
 app.use('/', router);

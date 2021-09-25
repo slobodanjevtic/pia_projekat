@@ -3,6 +3,8 @@ export class Competition {
   startDate: string;
   endDate: string;
   gender: string;
-  idDiscipline: number;
-  idLocation: number;
+  sport: string;
+  format: number;
+  discipline: string;
+  location: string;
 }

@@ -2,9 +2,9 @@
   <tr>
     <td>Sport:</td>
     <td>
-      <select id='sport' name='sport' [(ngModel)]='sport'>
+      <select id='sport' name='sport' [(ngModel)]='sport' (change)="selectFirstDiscipline()">
         <option *ngFor="let spr of sports">
-
+          {{spr.name}}
         </option>
       </select>
     </td>
@@ -13,9 +13,11 @@
     <td>Discipline:</td>
     <td>
       <select id='discipline' name='discipline' [(ngModel)]='discipline'>
-        <option *ngFor="let dis of disciplines">
-
-        </option>
+        <ng-container *ngFor="let dis of disciplines">
+          <option [ngValue]='dis.name' *ngIf="dis.sport == sport && dis.status == 1">
+            {{dis.name}}
+          </option>
+        </ng-container>
       </select>
     </td>
   </tr>
@@ -24,6 +26,19 @@
     <td>
       <input type="radio" name="gender" value="M" [(ngModel)]='gender'>M
       <input type="radio" name="gender" value="F" [(ngModel)]='gender'>F
+    </td>
+  </tr>
+  <tr>
+    <td>Format:</td>
+    <td>
+      <select id='format' name='format' [(ngModel)]='format'>
+        <option value="1">Max 8 competitors, final round, 1 shot, best result wins</option>
+        <option value="2">Max 8 competitors, final round, 3 shot, best result wins</option>
+        <option value="3">Max 8 competitors, final round, 6 shot, highest sum wins</option>
+        <option value="4">Draw for 4 competitors</option>
+        <option value="5">Draw for 8 competitors</option>
+        <option value="6">Draw for 16 competitors</option>
+      </select>
     </td>
   </tr>
   <tr>
@@ -43,7 +58,7 @@
     <td>
       <select id='location' name='location' [(ngModel)]='location'>
         <option *ngFor="let loc of locations">
-
+          {{loc.name}}
         </option>
       </select>
     </td>
@@ -55,25 +70,24 @@
     </td>
   </tr>
 </table>
+<span class="error">{{errorMessage}}</span>
 <br/>
 <table>
   <tr>
-      <td>Sport</td> |
-      <td>Discipline</td> |
-      <td>Gender</td> |
-      <td>Start date</td> |
-      <td>End date</td> |
-      <td>Location</td> |
-      <td>Type</td>
+      <td>Sport</td>
+      <td>| Discipline</td>
+      <td>| Gender</td>
+      <td>| Start date</td>
+      <td>| End date</td>
+      <td>| Location</td>
   </tr>
   <tr *ngFor="let comp of competitions">
     <td>{{comp.sport}}</td>
-    <td>{{comp.dicipline}}</td>
-    <td>{{comp.gender}}</td>
-    <td>{{comp.startDate}}</td>
-    <td>{{comp.endDate}}</td>
-    <td>{{comp.location}}</td>
-    <td>{{comp.type}}</td>
+    <td>| {{comp.discipline}}</td>
+    <td>| {{comp.gender}}</td>
+    <td>| {{comp.startDate}}</td>
+    <td>| {{comp.endDate}}</td>
+    <td>| {{comp.location}}</td>
   </tr>
 
 </table>
