@@ -2,9 +2,9 @@
   <tr>
     <td>Sport:</td>
     <td>
-      <select id='sport' name='sport' [(ngModel)]='sport'>
+      <select id='sport' name='sport' [(ngModel)]='sport' (change)="selectFirstDiscipline()">
         <option *ngFor="let spr of sports">
-
+          {{spr.name}}
         </option>
       </select>
     </td>
@@ -13,9 +13,11 @@
     <td>Discipline:</td>
     <td>
       <select id='discipline' name='discipline' [(ngModel)]='discipline'>
-        <option *ngFor="let dis of disciplines">
-
-        </option>
+        <ng-container *ngFor="let dis of disciplines">
+          <option [ngValue]='dis.name' *ngIf="dis.sport == sport && dis.status == 1">
+            {{dis.name}}
+          </option>
+        </ng-container>
       </select>
     </td>
   </tr>
@@ -40,6 +42,12 @@
     </td>
   </tr>
   <tr>
+    <td>Athlete ID:</td>
+    <td>
+        <input type='text' name='id' [(ngModel)]='idAthlete'>
+    </td>
+  </tr>
+  <tr>
     <td></td>
     <td>
         <button (click)='addAthlete()'>Add</button>
@@ -52,21 +60,26 @@
     </td>
   </tr>
 </table>
+<span class="error">{{errorMessage}}</span>
 <br/>
 <table>
   <tr>
-    <td>Sport</td> |
-    <td>Discipline</td> |
-    <td>Name</td> |
-    <td>Surname</td>
+    <td>Sport</td>
+    <td>| Discipline</td>
+    <td>| ID</td>
+    <td>| Name</td>
+    <td>| Surname</td>
   </tr>
-  <tr *ngFor="let ath of athletes">
-    <td>{{ath.sport}}</td>
-    <td>{{ath.discipline}}</td>
-    <td>{{ath.name}}</td>
-    <td>{{ath.surname}}</td>
-    <td>
-      <button (click)='removeAthlete(ath)'>Remove</button>
-    </td>
-  </tr>
+  <ng-container  *ngFor="let ath of athletes">
+    <tr *ngFor="let dis of ath.disciplinesObject">
+      <td>{{ath.sport}}</td>
+      <td>| {{dis}}</td>
+      <td>| {{ath.id}}</td>
+      <td>| {{ath.name}}</td>
+      <td>| {{ath.surname}}</td>
+      <td>
+        <button (click)="removeAthlete(ath, dis)">Remove</button>
+      </td>
+    </tr>
+  </ng-container >
 </table>

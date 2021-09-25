@@ -8,6 +8,8 @@ import sport from './model/sport';
 import discipline from './model/discipline';
 import event_location from './model/event_location';
 import competition from './model/competition';
+import athlete from './model/athlete';
+import e from 'express';
 
 const app = express();
 
@@ -132,16 +134,95 @@ router.route('/getAllAthletesWithMedals').get((req, res) => {
 });
 
 router.route('/insertAthlete').post((req, res) => {
-  let sport = req.body.sport;
-  let discipline = req.body.discipline;
+  let dis = req.body.discipline;
   let gender = req.body.gender;
   let name = req.body.name;
   let surname = req.body.surname;
+  let idAthlete = req.body.idAthlete;
+  let nat = req.body.nation;
 
+  athlete.findOne({'id': idAthlete}, (err, ath) => {
+    if(err) {
+      console.log(err);
+      res.status(400);
+    }
+    else {
+      nation.findOne({'name': nat}, (err, n) => {
+        if(err) {
+          console.log(err);
+          res.status(400);
+        }
+        else {
+          discipline.findOne({'name': dis}, (err, d) => {
+            if(err) {
+              console.log(err);
+              res.status(400);
+            }
+            else {
+              if(ath == null) {
+                athlete.collection.insertOne({'id': idAthlete, 'name': name, 'surname': surname,
+                                              'gender': gender, 'idNation': n.get('id'), 
+                                              'idSport': d.get('idSport'), 'disciplines': [d.get('id')], 
+                                              'gold': 0, 'silver': 0, 'bronze': 0});
+                                              res.json({'message': 'OK'});
+                                            }
+              else {
+                if(ath.get('idNation') != n.get('id')) {
+                  res.json({'message': 'Athlete with this ID alreade compete for other nation'});
+                }
+                else if(ath.get('idSport') != d.get('idSport')) {
+                  res.json({'message': 'One athlete cannot compete in multiple sports'});
+                }
+                else {
+                  athlete.collection.updateOne({'id': idAthlete}, {$push: {'disciplines': d.get('id')}})
+                  res.json({'message': 'OK'});
+                }
+
+              }
+            }
+          })
+        }
+      })
+    }
+  })
+
+});
+
+router.route('/getAthletesForNation').post((req, res) => {
+  let nat = req.body.nation;
+
+  nation.findOne({'name': nat}, (err, n) => {
+    if(err) {
+      console.log(err);
+      res.status(400);
+    }
+    else {
+      athlete.find({'idNation': n.get('id')}, (err, ath) => {
+        if(err) {
+          console.log(err);
+          res.status(400);
+        }
+        else {
+          res.json(ath);
+        }
+      })
+    }
+  })
+});
+
+router.route('/removeDisciplineFromAthlete').post((req, res) => {
+  let idAthlete = req.body.idAthlete;
+  let idDiscipline = req.body.idDiscipline;
+
+  athlete.collection.updateOne({'id': idAthlete}, { $pull: {'disciplines': idDiscipline}});
+  res.json({'message': 'OK'});
 });
 
 router.route('/removeAthlete').post((req, res) => {
   let idAthlete = req.body.idAthlete;
+
+  athlete.collection.deleteOne({'id': idAthlete});
+  res.json({'message': 'OK'});
 });
 
 router.route('/insertMedalist').post((req, res) => {
@@ -456,6 +537,7 @@ router.route('/getAllDisciplines').get((req, res) => {
     }, 
     { 
         "$project" : { 
+            "id" : "$d.id",
             "sport" : "$s.name", 
             "status" : "$d.status", 
             "name" : "$d.name", 
@@ -530,14 +612,53 @@ router.route('/updateDiscipline').post((req, res) => {
 router.route('/login').post((req, res) => {
   let username = req.body.username;
   let password = req.body.password;
-
-  user.findOne({'username': username, 'password': password}, (err, user) => {
+  
+  user.aggregate([
+    { 
+        "$project" : { 
+            "_id" : 0, 
+            "u" : "$$ROOT"
+        }
+    }, 
+    { 
+        "$lookup" : { 
+            "localField" : "u.idNation", 
+            "from" : "Nations", 
+            "foreignField" : "id", 
+            "as" : "n"
+        }
+    }, 
+    { 
+        "$unwind" : { 
+            "path" : "$n", 
+            "preserveNullAndEmptyArrays" : false
+        }
+    }, 
+    { 
+        "$match" : { 
+            "u.username" : "pera", 
+            "u.password" : "P123era$@"
+        }
+    }, 
+    { 
+        "$project" : { 
+            "name" : "$u.name", 
+            "surname" : "$u.surname", 
+            "type" : "$u.type", 
+            "nation" : "$n.name", 
+            "_id" : 0
+        }
+    }
+  ], (err: any, usr: any) => {
     if(err) {
       console.log(err);
       res.status(400);
     }
-    else res.json(user);
+    else {
+      res.json(usr);
+    }
   })
+
 });
 
 router.route('/register').post((req, res) => {
@@ -625,7 +746,7 @@ router.route('/getAllPendingUsers').get((req, res) => {
     else {
       res.json(usr);
     }
-})
+  })
 });
 
 router.route('/updateUser').post((req, res) => {

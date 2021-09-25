@@ -27,10 +27,11 @@ export class LoginComponent implements OnInit {
       this.errorMessage = "You must enter username and password";
     }
     else {
-      this.userService.login(this.username, this.password).subscribe((u: User) => {
+      this.userService.login(this.username, this.password).subscribe((u: User[]) => {
+        console.log(u[0]);
         if(u != null) {
-          this.userService.loggedInUser.next(u);
-          sessionStorage.setItem('user', JSON.stringify(u));
+          this.userService.loggedInUser.next(u[0]);
+          sessionStorage.setItem('user', JSON.stringify(u[0]));
           this.router.navigate(['']);
         }
         else {
