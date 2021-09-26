@@ -72,17 +72,19 @@ export class TeamAthletRegisterComponent implements OnInit {
   }
 
   alreadyCompeting() : boolean {
+    let ret: boolean = false;
     const ath = this.athletes.get(parseInt(this.idAthlete));
     if(ath == null) {
-      return false;
+      ret = false;
     }
     else {
       ath.disciplines.forEach(dis => {
+        console.log(this.disciplines.get(dis).name, this.discipline);
         if(this.disciplines.get(dis).name == this.discipline) {
-          return true;
+          ret = true;
         }
       });
-      return false;
+      return ret;
     }
 
   }
@@ -135,20 +137,22 @@ export class TeamAthletRegisterComponent implements OnInit {
   getAthletesForNation() {
     this.athleteService.getAthletesForNation(this.user.nation).subscribe((ath: Athlete[]) => {
       ath.forEach(a => {
-        this.athletes.set(a.id, a);
         a.sport = this.sports.get(a.idSport).name;
+        this.athletes.set(a.id, a);
       });
       this.competitionService.getAllRegistered().subscribe((reg: Registered[]) => {
         reg.forEach(r => {
-          if(this.athletes.get(r.idAthlete).disciplines == null) {
-            this.athletes.get(r.idAthlete).disciplines = new Array<number>();
-          }
           if(this.athletes.has(r.idAthlete)) {
+            if(this.athletes.get(r.idAthlete).disciplines == null) {
+              this.athletes.get(r.idAthlete).disciplines = new Array<number>();
+            }
             this.athletes.get(r.idAthlete).disciplines.push(r.idDiscipline);
           }
+
         });
         console.log(this.athletes);
       })
+
     })
   }
 }

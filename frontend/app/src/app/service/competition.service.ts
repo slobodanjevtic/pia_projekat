@@ -88,6 +88,14 @@ export class CompetitionService {
     return this.http.get(`${this.uri}/getCompetitions`);
   }
 
+  getAllCompetitionsForDelegate(idDelegate) {
+    const data = {
+      idDelegate: idDelegate
+    }
+
+    return this.http.post(`${this.uri}/getAllCompetitionsForDelegate`, data);
+  }
+
   getNumOfDelegating(id) {
     const data = {
       id: id

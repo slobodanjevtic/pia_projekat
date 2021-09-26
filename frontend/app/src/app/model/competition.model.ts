@@ -4,7 +4,7 @@ export class Competition {
   endDate: string;
   gender: string;
   sport: string;
-  format: number;
+  format: string;
   discipline: string;
   location: string;
   idDelegate: number;

@@ -3,4 +3,5 @@ export class Participating {
   idEvent: number;
   idAthlete: number;
   result: number;
+  round: number;
 }

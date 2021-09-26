@@ -1,35 +1,4 @@
 <table>
-  <!--
-  <tr>
-    <td>Sport:</td>
-    <td>
-      <select id='sport' name='sport' [(ngModel)]='sport' (change)="selectFirstDiscipline(); setCompeting()">
-        <option *ngFor="let spr of sports">
-          {{spr.name}}
-        </option>
-      </select>
-    </td>
-  </tr>
-  <tr>
-    <td>Discipline:</td>
-    <td>
-      <select id='discipline' name='discipline' [(ngModel)]='discipline' (change)="setCompeting()">
-        <ng-container *ngFor="let dis of disciplines">
-          <option [ngValue]='dis.name' *ngIf="dis.sport == sport && dis.status == 1">
-            {{dis.name}}
-          </option>
-        </ng-container>
-      </select>
-    </td>
-  </tr>
-  <tr>
-    <td>Gender:</td>
-    <td>
-      <input type="radio" name="gender" value="M" [(ngModel)]='gender'>M
-      <input type="radio" name="gender" value="F" [(ngModel)]='gender'>F
-    </td>
-  </tr>
-  -->
   <tr>
     <td>Competition:</td>
     <td>

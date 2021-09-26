@@ -151,7 +151,7 @@ export class CompetitionFormationComponent implements OnInit {
         this.athletes.forEach(ath => {
           ath.disciplines.forEach(dis => {
             if(dis == this.getDiscipline() && ath.gender == this.competition.gender) {
-              if(this.competition.format >= 4 && this.competition.format <= 6) {
+              if(parseInt(this.competition.format) >= 4 && parseInt(this.competition.format) <= 6) {
                 console.log("4");
                 if(!this.checkSeeds()) {
                   this.errorMessage = "All athletes must be different seeded";

@@ -1,35 +1,53 @@
 <table>
   <tr>
-    <td>Sport:</td>
+    <td>Competition:</td>
     <td>
-      <select id='sport' name='sport' [(ngModel)]='sport'>
-        <option *ngFor="let spr of sports">
-
+      <select id='competition' name='competition' [(ngModel)]='competition' (change)="getAllParticipants()">
+        <option [ngValue]="comp" *ngFor="let comp of competitions.values()">
+          {{comp.sport}}, {{comp.discipline}}, {{comp.gender}}
         </option>
       </select>
     </td>
   </tr>
   <tr>
-    <td>Discipline:</td>
-    <td>
-      <select id='discipline' name='discipline' [(ngModel)]='discipline'>
-        <option *ngFor="let dis of disciplines">
-
-        </option>
-      </select>
-    </td>
-  </tr>
-  <tr>
-    <td>Gender:</td>
-    <td>
-      <input type="radio" name="gender" value="M" [(ngModel)]='gender'>M
-      <input type="radio" name="gender" value="F" [(ngModel)]='gender'>F
-    </td>
-  </tr>
   <tr>
     <td></td>
     <td>
-        <button (click)='generateDraw()'>Generate</button>
+        <button (click)='generate()'>Generate</button>
     </td>
   </tr>
+</table>
+
+<br/>
+
+<table>
+  <tr>
+    <td>Nation</td>
+    <td>| Athlete</td>
+  </tr>
+
+  <tr *ngFor="let ath of groupAthletes">
+    <td>{{ath.nation}}</td>
+    <td>| {{ath.name}} {{ath.surname}}</td>
+  </tr>
+
+</table>
+
+<br/>
+
+<table>
+  <tr>
+    <td>Event</td>
+    <td>| Round</td>
+    <td>| Athlete</td>
+  </tr>
+
+  <tr *ngFor="let ath of groupAthletes">
+    <ng-container *ngIf="ath.event != null">
+      <td>{{ath.event}}</td>
+      <td>| {{ath.round}}</td>
+      <td>| {{ath.name}} {{ath.surname}}</td>
+    </ng-container>
+  </tr>
+
 </table>

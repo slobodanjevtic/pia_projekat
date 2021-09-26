@@ -12,6 +12,8 @@ import athlete from './model/athlete';
 import competing from './model/competing';
 import delegating from './model/delegating';
 import registered from './model/registered';
+import participating from './model/participating';
+import sport_event from './model/sport_event';
 
 const app = express();
 
@@ -114,6 +116,7 @@ router.route('/getAllCompetings').get((req, res) => {
         "$project" : { 
             "idAthlete" : "$a.id", 
             "idCompetition" : "$c.idCompetition", 
+            "seed" : "$c.seed", 
             "idDiscipline" : "$comp.idDiscipline", 
             "_id" : 0
         }
@@ -577,10 +580,6 @@ router.route('/getEvents').post((req, res) => {
   let location = req.body.location;
 });
 
-router.route('/insertParticipating').post((req, res) => {
-  let idEvent = req.body.idEvent;
-  let idAthlete = req.body.idAthlete;
-});
 
 router.route('/updataParticipating').post((req, res) => {
   let idParticipating = req.body.idParticipating;
@@ -742,6 +741,7 @@ router.route('/login').post((req, res) => {
     }, 
     { 
         "$project" : { 
+            "id" : "$u.id", 
             "name" : "$u.name", 
             "surname" : "$u.surname", 
             "type" : "$u.type", 
@@ -784,7 +784,7 @@ router.route('/register').post((req, res) => {
         else {
           user.collection.insertOne({'id': usr.get('id') + 1, 'username': username, 'password': password, 
                                     'name': name, 'surname': surname, 'email': email, 'type': type, 
-                                    'staus': 0, 'idNattion': nt.get('id')}, (err, u) => {
+                                    'status': 0, 'idNation': nt.get('id')}, (err, u) => {
             if(err) {
               console.log(err);
               res.status(400);
@@ -1094,6 +1094,102 @@ router.route('/getNumOfDelegating').post((req, res) => {
 });
 
 
+router.route('/getAllCompetitionsForDelegate').post((req, res) => {
+  let id = req.body.idDelegate;
+
+  sport.aggregate([
+        { 
+            "$project" : { 
+                "_id" : 0, 
+                "s" : "$$ROOT"
+            }
+        }, 
+        { 
+            "$lookup" : { 
+                "localField" : "s.id", 
+                "from" : "Disciplines", 
+                "foreignField" : "idSport", 
+                "as" : "d"
+            }
+        }, 
+        { 
+            "$unwind" : { 
+                "path" : "$d", 
+                "preserveNullAndEmptyArrays" : false
+            }
+        }, 
+        { 
+            "$lookup" : { 
+                "localField" : "d.id", 
+                "from" : "Competitions", 
+                "foreignField" : "idDiscipline", 
+                "as" : "c"
+            }
+        }, 
+        { 
+            "$unwind" : { 
+                "path" : "$c", 
+                "preserveNullAndEmptyArrays" : false
+            }
+        }, 
+        { 
+            "$lookup" : { 
+                "localField" : "c.idLocation", 
+                "from" : "EventLocations", 
+                "foreignField" : "id", 
+                "as" : "l"
+            }
+        }, 
+        { 
+            "$unwind" : { 
+                "path" : "$l", 
+                "preserveNullAndEmptyArrays" : false
+            }
+        }, 
+        { 
+            "$lookup" : { 
+                "localField" : "c.id", 
+                "from" : "Delegating", 
+                "foreignField" : "idCompetition", 
+                "as" : "de"
+            }
+        }, 
+        { 
+            "$unwind" : { 
+                "path" : "$de", 
+                "preserveNullAndEmptyArrays" : true
+            }
+        }, 
+        { 
+            "$match" : { 
+                "de.idDelegate" : id
+            }
+        }, 
+        { 
+            "$project" : { 
+                "id" : "$c.id", 
+                "sport" : "$s.name", 
+                "discipline" : "$d.name", 
+                "gender" : "$c.gender", 
+                "startDate" : "$c.startDate", 
+                "endDate" : "$c.endDate", 
+                "location" : "$l.name", 
+                "format" : "$c.format", 
+                "idDelegate" : "$de.idDelegate", 
+                "_id" : 0
+            }
+        }
+    ], (err: any, comp: any) => {
+      if(err) {
+        console.log(err);
+        res.status(400);
+      }
+      else {
+        res.json(comp);
+      }
+  })
+})
+
 router.route('/updateDelegate').post((req, res) => {
   let idCompetition = req.body.idCompetition;
   let idDelegate = req.body.idDelegate;
@@ -1105,16 +1201,131 @@ router.route('/updateDelegate').post((req, res) => {
     }
     else {
       if(del == null) {
-        delegating.collection.insertOne({'idCompetititon': idCompetition, 'idDelegate': idDelegate});
+        delegating.collection.insertOne({'idCompetition': idCompetition, 'idDelegate': idDelegate});
       }
       else {
-        delegating.collection.updateOne({'idCompetititon': idCompetition}, 
+        delegating.collection.updateOne({'idCompetition': idCompetition}, 
                 { $set: {'idDelegate': idDelegate}});
 
         res.json({'message': 'OK'});
       }
     }
   })
+});
+
+router.route('/insertParticipating').post((req, res) => {
+  let idCompetition = req.body.idCompetition;
+  let athletes = req.body.athletes;
+  let round = req.body.round;
+
+  console.log(athletes);
+
+  sport_event.findOne({'idCompetition': idCompetition, 'round': round}, (err, spEv) => {
+    if(err) {
+      console.log(err);
+      res.status(400);
+    }
+    else {
+      if(spEv == null) {
+        sport_event.findOne({}, (err, ev) => {
+          if(err) {
+            console.log(err);
+            res.status(400);
+          }
+          else {
+            competition.findOne({'id': idCompetition}, (err, comp) => {
+              let id = 0;
+              if(ev != null) {
+                id = ev.get('id');
+              }
+              if(comp.get('format') > 3) {
+                let i = 0;
+                athletes.forEach((ath: any) => {
+                  if(ath != null) {
+                    if(i % 2 == 0) {
+                      id++;
+                      sport_event.collection.insertOne({'id': id, 'round': round, 'date': null, 'time': null, 'idCompetition': idCompetition, 'idLocation': null});
+                    }
+                    participating.collection.insertOne({'idEvent': id, 'idAthlete': ath, 'result': null});
+                    i++;
+                  }
+                });
+              }
+              else {
+                id++;
+                sport_event.collection.insertOne({'id': id, 'round': round, 'date': null, 'time': null, 'idCompetition': idCompetition, 'idLocation': null});
+                athletes.forEach((ath: any) => {
+                  if(ath != null) {
+                    participating.collection.insertOne({'idEvent': id, 'idAthlete': ath, 'result': null});
+                  }
+                });
+              }
+
+              res.json({'message': 'OK'});
+            })
+
+
+          }
+
+        }).sort({'id': -1}).limit(1);
+      }
+      else {
+        res.json({'message': 'Round already set'});
+      }
+    }
+
+  })
+
+});
+
+router.route('/getAllParticipants').post((req, res) => {
+  let idCompetition = req.body.idCompetition;
+
+  competing.aggregate([
+    { 
+        "$project" : { 
+            "_id" : 0, 
+            "c" : "$$ROOT"
+        }
+    }, 
+    { 
+        "$lookup" : { 
+            "localField" : "c.idCompetition", 
+            "from" : "SportEvents", 
+            "foreignField" : "idCompetition", 
+            "as" : "se"
+        }
+    }, 
+    { 
+        "$unwind" : { 
+            "path" : "$se", 
+            "preserveNullAndEmptyArrays" : true
+        }
+    }, 
+    { 
+        "$match" : { 
+            "c.idCompetition" : idCompetition
+        }
+    }, 
+    { 
+        "$project" : { 
+            "idEvent" : "$se.id", 
+            "round" : "$se.round", 
+            "idCompetition" : "$c.idCompetition", 
+            "idAthlete" : "$c.idAthlete", 
+            "_id" : 0
+        }
+    }
+  ], (err: any, par: any) => {
+    if(err) {
+      console.log(err);
+      res.status(400);
+    }
+    else {
+      res.json(par);
+    }
+  })
+
 });
 
 app.use('/', router);
