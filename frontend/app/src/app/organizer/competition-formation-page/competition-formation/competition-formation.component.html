@@ -1,10 +1,11 @@
 <table>
+  <!--
   <tr>
     <td>Sport:</td>
     <td>
-      <select id='sport' name='sport' [(ngModel)]='sport'>
+      <select id='sport' name='sport' [(ngModel)]='sport' (change)="selectFirstDiscipline(); setCompeting()">
         <option *ngFor="let spr of sports">
-
+          {{spr.name}}
         </option>
       </select>
     </td>
@@ -12,10 +13,12 @@
   <tr>
     <td>Discipline:</td>
     <td>
-      <select id='discipline' name='discipline' [(ngModel)]='discipline'>
-        <option *ngFor="let dis of disciplines">
-
-        </option>
+      <select id='discipline' name='discipline' [(ngModel)]='discipline' (change)="setCompeting()">
+        <ng-container *ngFor="let dis of disciplines">
+          <option [ngValue]='dis.name' *ngIf="dis.sport == sport && dis.status == 1">
+            {{dis.name}}
+          </option>
+        </ng-container>
       </select>
     </td>
   </tr>
@@ -26,12 +29,23 @@
       <input type="radio" name="gender" value="F" [(ngModel)]='gender'>F
     </td>
   </tr>
+  -->
+  <tr>
+    <td>Competition:</td>
+    <td>
+      <select id='competition' name='competition' [(ngModel)]='competition'>
+        <option [ngValue]="comp" *ngFor="let comp of competitions.values()">
+          {{comp.sport}}, {{comp.discipline}}, {{comp.gender}}
+        </option>
+      </select>
+    </td>
+  </tr>
   <tr>
     <td>Delegate:</td>
     <td>
       <select id='delegate' name='delegate' [(ngModel)]='delegate'>
-        <option *ngFor="let del of delegates">
-
+        <option [ngValue]="del" *ngFor="let del of delegates">
+          {{del.name}} {{del.surname}}
         </option>
       </select>
     </td>
@@ -43,17 +57,33 @@
     </td>
   </tr>
 </table>
+<span class="error">{{errorMessage}}</span>
 <br/>
 <table>
   <tr>
-      <td>Flag</td> |
-      <td>Nation</td> |
-      <td>Athlete</td>
+      <td>Nation</td>
+      <td>| Athlete</td>
+      <td *ngIf="competition.sport === 'Tennis'">| Seed</td>
   </tr>
-  <tr *ngFor="let ath of athletes">
-    <td>{{ath.flag}}</td>
-    <td>{{ath.antion}}</td>
-    <td>{{ath.name}}</td>
-  </tr>
+  <ng-container *ngFor="let ath of athletes.values()">
+    <ng-container *ngFor="let dis of ath.disciplines">
+      <tr *ngIf="dis == getDiscipline() && ath.gender == competition.gender">
+        <td>{{ath.nation}}</td>
+        <td>| {{ath.name}} {{ath.surname}}</td>
+        <td *ngIf="ath.idSport == 1">
+          | <input type="number" min='1' max='16' [value]="ath.seed" [(ngModel)]="ath.seed">
+        </td>
+        <td *ngIf='isCompeting(ath, competition.id)'>
+          <button (click)="setCompeting(ath, competition.id, false)">Unregister</button>
+        </td>
+        <td *ngIf='!isCompeting(ath, competition.id)'>
+          <button (click)="setCompeting(ath, competition.id, true)">Register</button>
+        </td>
+
+      </tr>
+    </ng-container>
+
+
+  </ng-container>
 
 </table>

@@ -3,9 +3,6 @@ import mongoose from 'mongoose';
 const Schema = mongoose.Schema;
 
 let Delegating = new Schema({
-    id: {
-        type: Number
-    },
     idDelegate: {
         type: Number
     },

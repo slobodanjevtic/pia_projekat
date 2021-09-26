@@ -39,7 +39,7 @@ export class CompetitionEnterComponent implements OnInit {
   competitions: Competition[];
 
   sport: string;
-  discipline: string;
+  discipline: Discipline;
   gender: string;
   startDate: string;
   endDate: string;
@@ -50,11 +50,12 @@ export class CompetitionEnterComponent implements OnInit {
 
   addCompetition() {
     if(this.sport == null || this.discipline == null || this.gender == null ||
-       this.startDate == null || this.endDate == null || this.location == null || this.format == null) {
+       this.startDate == null || this.endDate == null || this.location == null || this.format == null ||
+       this.discipline.status == 0) {
         this.errorMessage = "You have to set all data";
       }
       else {
-        this.competitionService.insertCompetition(this.discipline, this.gender,
+        this.competitionService.insertCompetition(this.discipline.name, this.gender,
                                                   this.startDate, this.endDate,
                                                   this.location, this.format).subscribe((res) => {
             console.log(res);
@@ -83,7 +84,7 @@ export class CompetitionEnterComponent implements OnInit {
     for (let i = 0; i < this.disciplines.length; i++) {
       const d = this.disciplines[i];
       if(d.sport == this.sport) {
-        this.discipline = d.name;
+        this.discipline = d;
         break;
       }
     }

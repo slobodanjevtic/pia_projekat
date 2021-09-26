@@ -14,7 +14,7 @@
     <td>
       <select id='discipline' name='discipline' [(ngModel)]='discipline'>
         <ng-container *ngFor="let dis of disciplines">
-          <option [ngValue]='dis.name' *ngIf="dis.sport == sport && dis.status == 1">
+          <option [ngValue]='dis' *ngIf="dis.sport == sport && dis.status == 1">
             {{dis.name}}
           </option>
         </ng-container>

@@ -8,10 +8,13 @@ export class Athlete {
   idSport: number;
   sport: string;
   disciplines: Array<number>;
-  disciplinesObject: Array<string>;
+  competitions: Array<number>;
+  newCompetitions: Array<number>;
+  competing: boolean;
   nation: string;
   gold: number;
   silver: number;
   bronze: number;
   show: boolean;
+  seed: number;
 }

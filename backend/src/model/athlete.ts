@@ -18,9 +18,6 @@ let Athlete = new Schema({
     idSport: {
         type: Number
     },
-    disciplines: {
-        type: Array
-    },
     idNation: {
         type: Number
     },

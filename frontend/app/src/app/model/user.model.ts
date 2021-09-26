@@ -8,4 +8,5 @@ export class User {
   type: string;
   status: number;
   nation: string;
+  delegating: number;
 }

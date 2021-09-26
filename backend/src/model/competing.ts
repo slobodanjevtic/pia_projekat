@@ -3,9 +3,6 @@ import mongoose from 'mongoose';
 const Schema = mongoose.Schema;
 
 let Competing = new Schema({
-    id: {
-        type: Number
-    },
     idAthlete: {
         type: Number
     },

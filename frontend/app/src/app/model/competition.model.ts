@@ -7,4 +7,5 @@ export class Competition {
   format: number;
   discipline: string;
   location: string;
+  idDelegate: number;
 }

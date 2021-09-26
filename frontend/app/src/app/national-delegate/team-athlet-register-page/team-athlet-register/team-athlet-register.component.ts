@@ -6,6 +6,8 @@ import { User } from 'src/app/model/user.model';
 import { Router } from '@angular/router';
 import { SportService } from 'src/app/service/sport.service';
 import { AthleteService } from 'src/app/service/athlete.service';
+import { Registered } from 'src/app/model/registered.model';
+import { CompetitionService } from 'src/app/service/competition.service';
 
 @Component({
   selector: 'app-team-athlet-register',
@@ -14,15 +16,13 @@ import { AthleteService } from 'src/app/service/athlete.service';
 })
 export class TeamAthletRegisterComponent implements OnInit {
 
-  constructor(private sportService: SportService, private athleteService: AthleteService,
+  constructor(private sportService: SportService, private competitionService: CompetitionService, private athleteService: AthleteService,
               private router: Router) { }
 
   ngOnInit(): void {
     this.user = JSON.parse(sessionStorage.getItem("user"));
     if(this.user != null && this.user.type === "national_delegate") {
       this.getAllSports();
-      this.getAllDisciplines();
-      this.getAthletesForNation();
     }
     else {
       this.router.navigate(['/']);
@@ -31,9 +31,9 @@ export class TeamAthletRegisterComponent implements OnInit {
 
   user: User;
 
-  sports: Sport[];
-  disciplines: Discipline[];
-  athletes: Athlete[];
+  sports: Map<number, Sport> = new Map<number, Sport>();
+  disciplines: Map<number, Discipline> = new Map<number, Discipline>();
+  athletes: Map<number, Athlete> = new Map<number, Athlete>();
 
   sport: string;
   discipline: string;
@@ -45,13 +45,12 @@ export class TeamAthletRegisterComponent implements OnInit {
   errorMessage: string;
 
   addAthlete() {
-
     if(this.sport == null || this.discipline == null || this.gender == null ||
       this.name == null || this.surname == null || this.idAthlete == null || this.user.nation == null) {
         this.errorMessage = "You have to set all data";
     }
     else {
-      if(this.alreadyCompinting()) {
+      if(this.alreadyCompeting()) {
         this.errorMessage = "Athlete is already compiting in this discipline";
       }
       else {
@@ -61,6 +60,9 @@ export class TeamAthletRegisterComponent implements OnInit {
                                     if(res['message'] == 'OK') {
                                       this.getAthletesForNation();
                                     }
+                                    else {
+                                      this.errorMessage = res['message'];
+                                    }
                                   });
         this.errorMessage = null;
       }
@@ -69,103 +71,84 @@ export class TeamAthletRegisterComponent implements OnInit {
 
   }
 
-  alreadyCompinting() : boolean {
-    for (let i = 0; i < this.athletes.length; i++) {
-      const ath = this.athletes[i];
-      for (let j = 0; j < ath.disciplinesObject.length; j++) {
-        const dis = ath.disciplinesObject[j];
-        if(dis === this.discipline) {
+  alreadyCompeting() : boolean {
+    const ath = this.athletes.get(parseInt(this.idAthlete));
+    if(ath == null) {
+      return false;
+    }
+    else {
+      ath.disciplines.forEach(dis => {
+        if(this.disciplines.get(dis).name == this.discipline) {
           return true;
         }
-      }
+      });
+      return false;
     }
-    return false;
+
   }
 
   uploadFile() {
 
   }
 
-  removeAthlete(athlete: Athlete, dis: string) {
-    if(athlete.disciplines.length == 1) {
-      this.athleteService.removeAthlete(athlete.id).subscribe((res) => {
-        if(res['message'] == 'OK') {
-          this.getAthletesForNation();
-          this.errorMessage = null;
-        }
-      })
-    }
-    else {
-      for (let i = 0; i < athlete.disciplinesObject.length; i++) {
-        const d = athlete.disciplinesObject[i];
-        if(d === dis) {
-          console.log(athlete.id, athlete.disciplines[i]);
-          this.athleteService.removeDisciplineFromAthlete(athlete.id, athlete.disciplines[i])
-                            .subscribe((res) => {
-            if(res['message'] == 'OK') {
-              this.getAthletesForNation();
-              this.errorMessage = null;
-            }
-          })
-          break;
-        }
+  removeAthlete(athlete: Athlete, dis: number) {
+    this.athleteService.removeDisciplineFromAthlete(athlete.id, dis).subscribe((res) => {
+      if(res['message'] == 'OK') {
+        this.getAthletesForNation();
+        this.errorMessage = null;
       }
-    }
-
+    })
   }
 
   getAllSports() {
     this.sportService.getAllSports().subscribe((spr: Sport[]) => {
-      this.sports = spr;
-      this.sport = this.sports[0].name;
+      spr.forEach(s => {
+        this.sports.set(s.id, s);
+      });
+      this.sport = spr[0].name;
+      this.getAllDisciplines();
     })
   }
 
   getAllDisciplines() {
     this.sportService.getAllDisciplines().subscribe((dis: Discipline[]) => {
-      this.disciplines = dis;
+      dis.forEach(d => {
+        this.disciplines.set(d.id, d);
+      });
+
       this.selectFirstDiscipline();
+      this.getAthletesForNation();
     })
+
   }
 
   selectFirstDiscipline() {
-    for (let i = 0; i < this.disciplines.length; i++) {
-      const d = this.disciplines[i];
-      if(d.sport == this.sport) {
-        this.discipline = d.name;
-        break;
+    this.disciplines.forEach(dis => {
+      if(dis.sport == this.sport) {
+        this.discipline = dis.name;
+        return;
       }
-    }
+    });
+
   }
 
   getAthletesForNation() {
     this.athleteService.getAthletesForNation(this.user.nation).subscribe((ath: Athlete[]) => {
-      this.athletes = ath;
-      this.athletes.forEach(at => {
-        at.sport = this.getSport(at.idSport);
-        at.disciplinesObject = new Array<string>();
-        at.disciplines.forEach(dis => {
-          at.disciplinesObject.push(this.getDiscipline(dis));
-        });
+      ath.forEach(a => {
+        this.athletes.set(a.id, a);
+        a.sport = this.sports.get(a.idSport).name;
       });
+      this.competitionService.getAllRegistered().subscribe((reg: Registered[]) => {
+        reg.forEach(r => {
+          if(this.athletes.get(r.idAthlete).disciplines == null) {
+            this.athletes.get(r.idAthlete).disciplines = new Array<number>();
+          }
+          if(this.athletes.has(r.idAthlete)) {
+            this.athletes.get(r.idAthlete).disciplines.push(r.idDiscipline);
+          }
+        });
+        console.log(this.athletes);
+      })
     })
-  }
-
-  getSport(id: number) : string {
-    for (let i = 0; i < this.sports.length; i++) {
-      const spr = this.sports[i];
-      if(spr.id == id) {
-        return spr.name;
-      }
-    }
-  }
-
-  getDiscipline(id: number) : string {
-    for (let i = 0; i < this.disciplines.length; i++) {
-      const dis = this.disciplines[i];
-      if(dis.id == id) {
-        return dis.name;
-      }
-    }
   }
 }
