@@ -587,12 +587,12 @@ router.route('/updataParticipating').post((req, res) => {
 });
 
 router.route('/updateEvent').post((req, res) => {
-  let sport = req.body.sport;
-  let discipline = req.body.discipline;
-  let gender = req.body.gender;
-  let data = req.body.data;
+  let idEvent = req.body.idEvent;
+  let date = req.body.date;
   let time = req.body.time;
-  let location = req.body.location;
+
+  sport_event.collection.updateOne({'id': idEvent}, { $set: {'date': date, 'time': time}});
+  res.json({'message': 'OK'});
 });
 
 router.route('/getAllSports').get((req, res) => {
@@ -1244,7 +1244,7 @@ router.route('/insertParticipating').post((req, res) => {
                   if(ath != null) {
                     if(i % 2 == 0) {
                       id++;
-                      sport_event.collection.insertOne({'id': id, 'round': round, 'date': null, 'time': null, 'idCompetition': idCompetition, 'idLocation': null});
+                      sport_event.collection.insertOne({'id': id, 'round': round, 'date': null, 'time': null, 'idCompetition': idCompetition, 'idLocation': comp.get('idLocation')});
                     }
                     participating.collection.insertOne({'idEvent': id, 'idAthlete': ath, 'result': null});
                     i++;
@@ -1253,7 +1253,7 @@ router.route('/insertParticipating').post((req, res) => {
               }
               else {
                 id++;
-                sport_event.collection.insertOne({'id': id, 'round': round, 'date': null, 'time': null, 'idCompetition': idCompetition, 'idLocation': null});
+                sport_event.collection.insertOne({'id': id, 'round': round, 'date': null, 'time': null, 'idCompetition': idCompetition, 'idLocation': comp.get('idLocation')});
                 athletes.forEach((ath: any) => {
                   if(ath != null) {
                     participating.collection.insertOne({'idEvent': id, 'idAthlete': ath, 'result': null});
@@ -1281,38 +1281,37 @@ router.route('/insertParticipating').post((req, res) => {
 router.route('/getAllParticipants').post((req, res) => {
   let idCompetition = req.body.idCompetition;
 
-  competing.aggregate([
+  sport_event.aggregate([
     { 
         "$project" : { 
             "_id" : 0, 
-            "c" : "$$ROOT"
+            "se" : "$$ROOT"
         }
     }, 
     { 
         "$lookup" : { 
-            "localField" : "c.idCompetition", 
-            "from" : "SportEvents", 
-            "foreignField" : "idCompetition", 
-            "as" : "se"
+            "localField" : "se.id", 
+            "from" : "Participating", 
+            "foreignField" : "idEvent", 
+            "as" : "p"
         }
     }, 
     { 
         "$unwind" : { 
-            "path" : "$se", 
-            "preserveNullAndEmptyArrays" : true
+            "path" : "$p", 
+            "preserveNullAndEmptyArrays" : false
         }
     }, 
     { 
         "$match" : { 
-            "c.idCompetition" : idCompetition
+            "se.idCompetition" : idCompetition
         }
     }, 
     { 
         "$project" : { 
             "idEvent" : "$se.id", 
             "round" : "$se.round", 
-            "idCompetition" : "$c.idCompetition", 
-            "idAthlete" : "$c.idAthlete", 
+            "idAthlete" : "$p.idAthlete", 
             "_id" : 0
         }
     }
@@ -1327,6 +1326,54 @@ router.route('/getAllParticipants').post((req, res) => {
   })
 
 });
+
+router.route('/getEventsForCompetition').post((req, res) => {
+  let idCompetition = req.body.idCompetition;
+
+  sport_event.aggregate([
+    { 
+        "$project" : { 
+            "_id" : 0, 
+            "se" : "$$ROOT"
+        }
+    }, 
+    { 
+        "$lookup" : { 
+            "localField" : "se.idLocation", 
+            "from" : "EventLocations", 
+            "foreignField" : "id", 
+            "as" : "el"
+        }
+    }, 
+    { 
+        "$unwind" : { 
+            "path" : "$el", 
+            "preserveNullAndEmptyArrays" : false
+        }
+    }, 
+    { 
+        "$match" : { 
+            "se.idCompetition" : idCompetition
+        }
+    }, 
+    { 
+        "$project" : { 
+            "id" : "$se.id", 
+            "round" : "$se.round", 
+            "location" : "$el.name", 
+            "_id" : 0
+        }
+    }
+  ], (err: any, ev: any) => {
+    if(err) {
+      console.log(err);
+      res.status(400);
+    }
+    else {
+      res.json(ev);
+    }
+  })
+})
 
 app.use('/', router);
 app.listen(4000, () => console.log(`Express server running on port 4000`));

@@ -21,7 +21,7 @@ import { Participating } from 'src/app/model/participating.model';
 })
 export class DrawFormationComponent implements OnInit {
 
-  constructor(private sportService: SportService, private competitionService: CompetitionService,
+  constructor(private competitionService: CompetitionService,
               private athleteService: AthleteService, private sportEventService: SportEventService,
               private router: Router) { }
 
@@ -37,16 +37,11 @@ export class DrawFormationComponent implements OnInit {
   }
 
   user: User;
-  sports: Sport[];
-  disciplines: Map<number, Discipline> = new Map<number, Discipline>();
   competitions: Map<number, Competition> = new Map<number, Competition>();
-  delegates: User[];
   athletes: Map<number, Athlete> = new Map<number, Athlete>();
   groupAthletes: Athlete[] = [];
 
-  sport: string;
   competition: Competition;
-  delegate: User;
 
   group: Array<number>;
   draw: Array<number>;
@@ -187,6 +182,7 @@ export class DrawFormationComponent implements OnInit {
     console.log(this.competition.id);
     this.sportEventService.getAllParticipants(this.competition.id).subscribe((par: Participating[]) => {
       this.groupAthletes = [];
+      console.log(par);
       par.forEach(p => {
         if(this.athletes.has(p.idAthlete)) {
           this.athletes.get(p.idAthlete).event = p.idEvent;
@@ -194,17 +190,16 @@ export class DrawFormationComponent implements OnInit {
           this.groupAthletes.push(this.athletes.get(p.idAthlete));
         }
       });
+      console.log(this.groupAthletes);
     })
   }
 
   getAllCompetitionsForDelegate() {
     this.competitionService.getAllCompetitionsForDelegate(this.user.id).subscribe((comp: Competition[]) => {
-      console.log(comp);
       comp.forEach(c => {
         this.competitions.set(c.id, c);
       });
       this.competition = comp[0];
-      console.log(this.competitions);
     })
   }
 
@@ -216,7 +211,6 @@ export class DrawFormationComponent implements OnInit {
         this.athletes.set(a.id, a);
       });
       this.competitionService.getAllCompetings().subscribe((comp: Competing[]) => {
-        console.log(comp);
         comp.forEach(c => {
           if(this.athletes.has(c.idAthlete)) {
             this.athletes.get(c.idAthlete).competitions.push(c.idCompetition);
@@ -230,8 +224,8 @@ export class DrawFormationComponent implements OnInit {
             }
           });
         })
+        this.getAllParticipants();
       })
-      this.getAllParticipants();
     })
   }
 

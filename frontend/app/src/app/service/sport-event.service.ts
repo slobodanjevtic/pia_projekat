@@ -39,6 +39,14 @@ export class SportEventService {
     return this.http.post(`${this.uri}/getEvents`, data);
   }
 
+  getEventsForCompetition(idCompetition) {
+    const data = {
+      idCompetition: idCompetition
+    }
+
+    return this.http.post(`${this.uri}/getEventsForCompetition`, data);
+  }
+
   insertParticipating(idCompetition, athletes, round) {
     const data = {
       idCompetition: idCompetition,
@@ -67,14 +75,11 @@ export class SportEventService {
     return this.http.post(`${this.uri}/updataParticipating`, data);
   }
 
-  update(sport, discipline, gender, date, time, location) {
+  updateEvent(idEvent, date, time) {
     const data = {
-      sport: sport,
-      discipline: discipline,
-      gender: gender,
+      idEvent: idEvent,
       date: date,
-      time: time,
-      location: location
+      time: time
     }
 
     return this.http.post(`${this.uri}/updateEvent`, data);

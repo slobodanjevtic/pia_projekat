@@ -1,31 +1,15 @@
 <table>
   <tr>
-    <td>Sport:</td>
+    <td>Competition:</td>
     <td>
-      <select id='sport' name='sport' [(ngModel)]='sport'>
-        <option *ngFor="let spr of sports">
-
+      <select id='competition' name='competition' [(ngModel)]='competition' (change)="getEventsForCompetition()">
+        <option [ngValue]="comp" *ngFor="let comp of competitions.values()">
+          {{comp.sport}}, {{comp.discipline}}, {{comp.gender}}
         </option>
       </select>
     </td>
   </tr>
   <tr>
-    <td>Discipline:</td>
-    <td>
-      <select id='discipline' name='discipline' [(ngModel)]='discipline'>
-        <option *ngFor="let dis of disciplines">
-
-        </option>
-      </select>
-    </td>
-  </tr>
-  <tr>
-    <td>Gender:</td>
-    <td>
-      <input type="radio" name="gender" value="M" [(ngModel)]='gender'>M
-      <input type="radio" name="gender" value="F" [(ngModel)]='gender'>F
-    </td>
-  </tr>
   <tr>
     <td></td>
     <td>
@@ -33,31 +17,30 @@
     </td>
   </tr>
 </table>
+<span class="error">{{errorMessage}}</span>
+
 <br/>
+
 <table>
   <tr>
-      <td>Match</td> |
-      <td>Date</td> |
-      <td>Time</td> |
-      <td>Location</td> |
-      <td>Round</td>
+      <td>Event</td>
+      <td>| Round</td>
+      <td>| Location</td>
+      <td>| Start - End date</td>
+      <td>| Event date</td>
+      <td>| Time</td>
   </tr>
-  <tr *ngFor="let mat of matches">
-    <td>{{mat.match}}</td>
-    <td>
-      <input type="date" name="date" value="{{mat.date}}" [(ngModel)]='mat.date'>
+  <tr *ngFor="let ev of events">
+    <td>{{ev.id}}</td>
+    <td>| {{ev.round}}</td>
+    <td>| {{ev.location}}</td>
+    <td>| {{ev.competitionPeriod}}</td>
+    <td>|
+      <input type="date" name="date" value="{{ev.date}}" [(ngModel)]='ev.date'>
     </td>
-    <td>
-      <input type="time" name="time" value="{{mat.time}}" [(ngModel)]='mat.time'>
+    <td>|
+      <input type="time" name="time" value="{{ev.time}}" [(ngModel)]='ev.time'>
     </td>
-    <td>
-      <select id='location' name='location' [(ngModel)]='location'>
-        <option *ngFor="let loc of locations">
-
-        </option>
-      </select>
-    </td>
-    <td>{{mat.round}}</td>
   </tr>
 
 </table>
