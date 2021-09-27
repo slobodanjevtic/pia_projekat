@@ -12,6 +12,9 @@ export class Athlete {
   newCompetitions: Array<number>;
   event: number;
   round: number;
+  series: number;
+  result: string;
+  place: number;
   nation: string;
   gold: number;
   silver: number;

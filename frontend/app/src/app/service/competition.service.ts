@@ -22,11 +22,12 @@ export class CompetitionService {
     return this.http.post(`${this.uri}/insertCompetition`, data);
   }
 
-  updateCompeting(idAthlete, idCompetition, competing, seed) {
+  updateCompeting(idAthlete, idCompetition, competing, seed, place) {
     const data = {
       idAthlete: idAthlete,
       idCompetition: idCompetition,
       competing: competing,
+      place: place,
       seed: seed
     }
 

@@ -17,19 +17,21 @@ export class SportService {
     return this.http.get(`${this.uri}/getAllDisciplines`);
   }
 
-  updateDiscipline(discipline, status) {
+  updateDiscipline(discipline, status, regex) {
     const data = {
       discipline: discipline,
-      status: status
+      status: status,
+      regex
     }
 
     return this.http.post(`${this.uri}/updateDiscipline`, data);
   }
 
-  addNewSportAndDiscipline(sport, discipline) {
+  addNewSportAndDiscipline(sport, discipline, regex) {
     const data = {
       sport: sport,
-      discipline: discipline
+      discipline: discipline,
+      regex: regex,
     }
 
     return this.http.post(`${this.uri}/addNewSportAndDiscipline`, data);

@@ -39,7 +39,7 @@ export class DrawFormationComponent implements OnInit {
   user: User;
   competitions: Map<number, Competition> = new Map<number, Competition>();
   athletes: Map<number, Athlete> = new Map<number, Athlete>();
-  groupAthletes: Athlete[] = [];
+  participantes: Participating[] = [];
 
   competition: Competition;
 
@@ -51,9 +51,13 @@ export class DrawFormationComponent implements OnInit {
   generate() {
     switch (parseInt(this.competition.format)) {
       case 1:
+        this.generateGroup(1);
+        break;
       case 2:
+        this.generateGroup(3);
+        break;
       case 3:
-        this.generateGroup(parseInt(this.competition.format));
+        this.generateGroup(6);
         break;
       case 4:
         this.generateDraw(4);
@@ -69,8 +73,10 @@ export class DrawFormationComponent implements OnInit {
     }
   }
 
-  generateGroup(shots: number) {
+  generateGroup(series: number) {
     this.group = new Array<number>();
+
+    console.log(series);
 
     this.athletes.forEach(ath => {
       if(ath.competitions.includes(this.competition.id)) {
@@ -80,11 +86,12 @@ export class DrawFormationComponent implements OnInit {
         }
       }
     });
-    this.sportEventService.insertParticipating(this.competition.id, this.group, 1).subscribe((res) => {
+    this.sportEventService.insertParticipating(this.competition.id, this.group, 1, series).subscribe((res) => {
       if(res['message'] == 'OK') {
         this.getAllParticipants();
       }
     })
+
   }
 
   generateDraw(players: number) {
@@ -152,7 +159,7 @@ export class DrawFormationComponent implements OnInit {
       }
     });
     console.log(this.competition.id, this.draw);
-    this.sportEventService.insertParticipating(this.competition.id, this.draw, 1).subscribe((res) => {
+    this.sportEventService.insertParticipating(this.competition.id, this.draw, 1, 1).subscribe((res) => {
       if(res['message'] == 'OK') {
         this.getAllParticipants();
       }
@@ -181,16 +188,25 @@ export class DrawFormationComponent implements OnInit {
   getAllParticipants() {
     console.log(this.competition.id);
     this.sportEventService.getAllParticipants(this.competition.id).subscribe((par: Participating[]) => {
-      this.groupAthletes = [];
+      this.participantes = par;
       console.log(par);
-      par.forEach(p => {
+      this.participantes.forEach(p => {
         if(this.athletes.has(p.idAthlete)) {
-          this.athletes.get(p.idAthlete).event = p.idEvent;
-          this.athletes.get(p.idAthlete).round = p.round;
-          this.groupAthletes.push(this.athletes.get(p.idAthlete));
+          p.athlete = this.athletes.get(p.idAthlete).name + " " + this.athletes.get(p.idAthlete).surname;
         }
       });
-      console.log(this.groupAthletes);
+      this.participantes.sort((a, b) => {
+        if(a.idEvent > b.idEvent) return 1;
+        if(a.idEvent < b.idEvent) return -1;
+        if(a.round > b.round) return 1;
+        if(a.round < b.round) return -1;
+        if(a.series > b.series) return 1;
+        if(a.series < b.series) return -1;
+        if(a.athlete > b.athlete) return 1;
+        if(a.athlete < b.athlete) return -1
+        return 0;
+      });
+      console.log(this.participantes);
     })
   }
 

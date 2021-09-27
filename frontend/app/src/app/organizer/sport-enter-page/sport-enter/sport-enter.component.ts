@@ -19,6 +19,7 @@ export class SportEnterComponent implements OnInit {
     if(this.user != null && this.user.type === "organizer") {
       this.getAllSports();
       this.getAllDisciplines();
+      this.setRegex();
     }
     else {
       this.router.navigate(['/']);
@@ -35,20 +36,37 @@ export class SportEnterComponent implements OnInit {
   discipline: string;
   newSport: string;
   newDiscipline: string;
+  resultFormat: string;
+  resultFormatRegex: RegExp[] = [];
 
   errorMessage: string;
 
+  setRegex() {
+    this.resultFormatRegex.push(/^\d\d,\d\d$/);
+    this.resultFormatRegex.push(/^\d\d:\d\d,\d\d$/);
+    this.resultFormatRegex.push(/^\d\d:\d\d:\d\d$/);
+    this.resultFormatRegex.push(/^\d,\d\d$/);
+    this.resultFormatRegex.push(/^\d\d,\d\d$/);
+    this.resultFormatRegex.push(/^\d\d\d,\d\d$/);
+    this.resultFormatRegex.push(/^\d$/);
+
+  }
+
   enterSport() {
-    if(this.newDiscipline != null && this.newDiscipline.length > 0) {
+    if(this.resultFormat == null) {
+      this.errorMessage = "Please choose result format";
+    }
+    else {
+      if(this.newDiscipline != null && this.newDiscipline.length > 0) {
         if(this.newSport != null && this.newSport.length > 0) {
-          this.sportService.addNewSportAndDiscipline(this.newSport, this.newDiscipline).subscribe((res) => {
+          this.sportService.addNewSportAndDiscipline(this.newSport, this.newDiscipline, this.resultFormatRegex[parseInt(this.resultFormat)].source).subscribe((res) => {
             if(res['message'] == 'OK') {
               this.getAllDisciplines();
             }
           })
         }
         else {
-          this.sportService.addNewSportAndDiscipline(this.sport, this.newDiscipline).subscribe((res) => {
+          this.sportService.addNewSportAndDiscipline(this.sport, this.newDiscipline, this.resultFormatRegex[parseInt(this.resultFormat)].source).subscribe((res) => {
             if(res['message'] == 'OK') {
               this.getAllDisciplines();
             }
@@ -56,17 +74,18 @@ export class SportEnterComponent implements OnInit {
         }
       }
       else {
-        this.sportService.updateDiscipline(this.discipline, 1).subscribe((res) => {
+        this.sportService.updateDiscipline(this.discipline, 1, this.resultFormatRegex[parseInt(this.resultFormat)].source).subscribe((res) => {
           if(res['message'] == 'OK') {
             this.getAllDisciplines();
           }
         })
       }
+    }
 
   }
 
   remove(dis: string) {
-    this.sportService.updateDiscipline(dis, 0).subscribe(() => {
+    this.sportService.updateDiscipline(dis, 0, null).subscribe(() => {
       this.getAllDisciplines();
     })
   }

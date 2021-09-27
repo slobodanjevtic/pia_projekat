@@ -558,7 +558,57 @@ router.route('/getNation').post((req, res) => {
   let idNation = req.body.idNation;
 });
 
-router.route('/getAllEvents').get((req, res) => {
+router.route('/getAllReadyEvents').post((req, res) => {
+  let idCompetition = req.body.idCompetition;
+
+  sport_event.aggregate([
+    { 
+        "$project" : { 
+            "_id" : 0, 
+            "se" : "$$ROOT"
+        }
+    }, 
+    { 
+        "$lookup" : { 
+            "localField" : "se.id", 
+            "from" : "Participating", 
+            "foreignField" : "idEvent", 
+            "as" : "p"
+        }
+    }, 
+    { 
+        "$unwind" : { 
+            "path" : "$p", 
+            "preserveNullAndEmptyArrays" : false
+        }
+    }, 
+    { 
+        "$match" : { 
+            "se.date" : { 
+                "$ne" : null
+            }, 
+            "se.idCompetition" : idCompetition
+        }
+    }, 
+    { 
+        "$project" : { 
+            "idEvent" : "$se.id", 
+            "round" : "$se.round", 
+            "series" : "$se.series", 
+            "idAthlete" : "$p.idAthlete", 
+            "result" : "$p.result", 
+            "_id" : 0
+        }
+    }
+  ], (err: any, par: any) => {
+    if(err) {
+      console.log(err);
+      res.status(400);
+    }
+    else {
+      res.json(par);
+    }
+  })
 
 });
 
@@ -581,9 +631,13 @@ router.route('/getEvents').post((req, res) => {
 });
 
 
-router.route('/updataParticipating').post((req, res) => {
-  let idParticipating = req.body.idParticipating;
+router.route('/updateParticipating').post((req, res) => {
+  let idAthlete = req.body.idAthlete;
+  let idEvent = req.body.idEvent;
   let result = req.body.result;
+
+  participating.collection.updateOne({'idAthlete': idAthlete, 'idEvent': idEvent}, { $set: {'result': result}});
+  res.json({'message': 'OK'});
 });
 
 router.route('/updateEvent').post((req, res) => {
@@ -591,7 +645,7 @@ router.route('/updateEvent').post((req, res) => {
   let date = req.body.date;
   let time = req.body.time;
 
-  sport_event.collection.updateOne({'id': idEvent}, { $set: {'date': date, 'time': time}});
+  sport_event.collection.updateMany({'id': idEvent}, { $set: {'date': date, 'time': time}});
   res.json({'message': 'OK'});
 });
 
@@ -658,7 +712,7 @@ router.route('/getAllDisciplines').get((req, res) => {
 router.route('/addNewSportAndDiscipline').post((req, res) => {
   let spr = req.body.sport;
   let dis = req.body.discipline;
-
+  let reg = req.body.regex;
 
   sport.findOne({'name': spr}, (err, s) => {
     if(err) {
@@ -674,7 +728,7 @@ router.route('/addNewSportAndDiscipline').post((req, res) => {
           }
           else {
             discipline.collection.insertOne({'id': d.get('id')+1, 'name': dis, 'status': 1, 
-                                            'idSport': s.get('id')});
+                                            'idSport': s.get('id'), 'resultFormat': reg});
             res.json({'message': 'OK'});
           }
         }).sort({'id': -1}).limit(1);
@@ -690,7 +744,7 @@ router.route('/addNewSportAndDiscipline').post((req, res) => {
             }
             else {
               discipline.collection.insertOne({'id': d.get('id')+1, 'name': dis, 'status': 1, 
-                                              'idSport': s.get('id')+1});
+                                              'idSport': s.get('id')+1, 'resultFormat': reg});
               res.json({'message': 'OK'});
             }
           }).sort({'id': -1}).limit(1);
@@ -703,8 +757,10 @@ router.route('/addNewSportAndDiscipline').post((req, res) => {
 router.route('/updateDiscipline').post((req, res) => {
   let dis = req.body.discipline;
   let status = req.body.status;
+  let regex = req.body.regex;
 
-  discipline.collection.updateOne({'name': dis}, { $set: {'status': status}});
+  console.log(regex);
+  discipline.collection.updateOne({'name': dis}, { $set: {'status': status, 'resultFormat': regex}});
   res.json({'message': 'OK'});
 });
 
@@ -1015,6 +1071,7 @@ router.route('/updateCompeting').post((req, res) => {
   let idAthlete = req.body.idAthlete;
   let idCompetition = req.body.idCompetition;
   let isCompeting = req.body.competing;
+  let place = req.body.place;
   let seed = req.body.seed;
 
   competition.findOne({'id': idCompetition}, (err, comp) => {
@@ -1025,7 +1082,7 @@ router.route('/updateCompeting').post((req, res) => {
     else {
       console.log(isCompeting);
       if(isCompeting) {
-        competing.collection.insertOne({'idAthlete': idAthlete, 'idCompetition': idCompetition, 'seed': seed});
+        competing.collection.insertOne({'idAthlete': idAthlete, 'idCompetition': idCompetition, 'place': place, 'seed': seed});
       }
       else {
         competing.collection.deleteOne({'idAthlete': idAthlete, 'idCompetition': idCompetition});
@@ -1175,6 +1232,7 @@ router.route('/getAllCompetitionsForDelegate').post((req, res) => {
                 "endDate" : "$c.endDate", 
                 "location" : "$l.name", 
                 "format" : "$c.format", 
+                "resultFormat" : "$d.resultFormat", 
                 "idDelegate" : "$de.idDelegate", 
                 "_id" : 0
             }
@@ -1216,9 +1274,8 @@ router.route('/updateDelegate').post((req, res) => {
 router.route('/insertParticipating').post((req, res) => {
   let idCompetition = req.body.idCompetition;
   let athletes = req.body.athletes;
+  let series = req.body.series;
   let round = req.body.round;
-
-  console.log(athletes);
 
   sport_event.findOne({'idCompetition': idCompetition, 'round': round}, (err, spEv) => {
     if(err) {
@@ -1244,21 +1301,22 @@ router.route('/insertParticipating').post((req, res) => {
                   if(ath != null) {
                     if(i % 2 == 0) {
                       id++;
-                      sport_event.collection.insertOne({'id': id, 'round': round, 'date': null, 'time': null, 'idCompetition': idCompetition, 'idLocation': comp.get('idLocation')});
+                      sport_event.collection.insertOne({'id': id, 'round': round, 'series': series, 'date': null, 'time': null, 'idCompetition': idCompetition, 'idLocation': comp.get('idLocation')});
                     }
-                    participating.collection.insertOne({'idEvent': id, 'idAthlete': ath, 'result': null});
+                    participating.collection.insertOne({'idEvent': id, 'idAthlete': ath, 'result': [null]});
                     i++;
                   }
                 });
               }
               else {
                 id++;
-                sport_event.collection.insertOne({'id': id, 'round': round, 'date': null, 'time': null, 'idCompetition': idCompetition, 'idLocation': comp.get('idLocation')});
+                sport_event.collection.insertOne({'id': id, 'round': round, 'series': series, 'date': null, 'time': null, 'idCompetition': idCompetition, 'idLocation': comp.get('idLocation')});
                 athletes.forEach((ath: any) => {
                   if(ath != null) {
-                    participating.collection.insertOne({'idEvent': id, 'idAthlete': ath, 'result': null});
+                    participating.collection.insertOne({'idEvent': id, 'idAthlete': ath, 'result': [null]});
                   }
                 });
+
               }
 
               res.json({'message': 'OK'});
@@ -1311,8 +1369,29 @@ router.route('/getAllParticipants').post((req, res) => {
         "$project" : { 
             "idEvent" : "$se.id", 
             "round" : "$se.round", 
+            "series" : "$se.series", 
             "idAthlete" : "$p.idAthlete", 
+            "result" : "$p.result", 
             "_id" : 0
+        }
+    }, 
+    { 
+        "$group" : { 
+            "_id" : null, 
+            "distinct" : { 
+                "$addToSet" : "$$ROOT"
+            }
+        }
+    }, 
+    { 
+        "$unwind" : { 
+            "path" : "$distinct", 
+            "preserveNullAndEmptyArrays" : false
+        }
+    }, 
+    { 
+        "$replaceRoot" : { 
+            "newRoot" : "$distinct"
         }
     }
   ], (err: any, par: any) => {
@@ -1360,8 +1439,29 @@ router.route('/getEventsForCompetition').post((req, res) => {
         "$project" : { 
             "id" : "$se.id", 
             "round" : "$se.round", 
+            "date" : "$se.date", 
+            "time" : "$se.time", 
             "location" : "$el.name", 
             "_id" : 0
+        }
+    }, 
+    { 
+        "$group" : { 
+            "_id" : null, 
+            "distinct" : { 
+                "$addToSet" : "$$ROOT"
+            }
+        }
+    }, 
+    { 
+        "$unwind" : { 
+            "path" : "$distinct", 
+            "preserveNullAndEmptyArrays" : false
+        }
+    }, 
+    { 
+        "$replaceRoot" : { 
+            "newRoot" : "$distinct"
         }
     }
   ], (err: any, ev: any) => {

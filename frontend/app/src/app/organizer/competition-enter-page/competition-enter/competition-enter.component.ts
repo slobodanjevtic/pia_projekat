@@ -61,6 +61,7 @@ export class CompetitionEnterComponent implements OnInit {
             console.log(res);
             if(res['message'] == 'OK') {
               this.getCompetitions();
+              this.errorMessage = null;
             }
         });
       }

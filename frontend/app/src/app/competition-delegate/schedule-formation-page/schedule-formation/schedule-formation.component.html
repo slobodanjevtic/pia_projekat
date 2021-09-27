@@ -36,10 +36,10 @@
     <td>| {{ev.location}}</td>
     <td>| {{ev.competitionPeriod}}</td>
     <td>|
-      <input type="date" name="date" value="{{ev.date}}" [(ngModel)]='ev.date'>
+      <input type="date" name="date" [value]="ev.date" [(ngModel)]='ev.date'>
     </td>
     <td>|
-      <input type="time" name="time" value="{{ev.time}}" [(ngModel)]='ev.time'>
+      <input type="time" name="time" [value]="ev.time" [(ngModel)]='ev.time'>
     </td>
   </tr>
 

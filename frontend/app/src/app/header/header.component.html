@@ -14,16 +14,26 @@
       <a routerLink="competition-formation">Select competitors</a> |
       <a routerLink="register-requests">Register requests</a>
       <button (click)="logout()">Logout</button>
+      <td>
+        {{user.name}} {{user.surname}}
+      </td>
     </h4>
     <h4 *ngIf="user.type == 'competition_delegate'">
       <a routerLink="draw-formation">Draws</a> |
       <a routerLink="schedule-formation">Schedule</a> |
       <a routerLink="result-enter">Results</a>
       <button (click)="logout()">Logout</button>
+      <td>
+        {{user.name}} {{user.surname}}
+      </td>
     </h4>
     <h4 *ngIf="user.type == 'national_delegate'">
       <a routerLink="team-athlet-register">Register</a>
+      <td>{{user.name}} {{user.surname}}</td>
       <button (click)="logout()">Logout</button>
+      <td>
+        {{user.name}} {{user.surname}}
+      </td>
     </h4>
   </div>
 

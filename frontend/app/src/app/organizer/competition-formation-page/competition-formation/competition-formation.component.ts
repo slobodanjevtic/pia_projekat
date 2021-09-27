@@ -152,7 +152,6 @@ export class CompetitionFormationComponent implements OnInit {
           ath.disciplines.forEach(dis => {
             if(dis == this.getDiscipline() && ath.gender == this.competition.gender) {
               if(parseInt(this.competition.format) >= 4 && parseInt(this.competition.format) <= 6) {
-                console.log("4");
                 if(!this.checkSeeds()) {
                   this.errorMessage = "All athletes must be different seeded";
                   return;
@@ -160,8 +159,7 @@ export class CompetitionFormationComponent implements OnInit {
               }
               if(ath.newCompetitions.includes(this.competition.id) && !ath.competitions.includes(this.competition.id)) {
                 //add
-                console.log("5");
-                this.competitionService.updateCompeting(ath.id, this.competition.id, true, ath.seed).subscribe((res) => {
+                this.competitionService.updateCompeting(ath.id, this.competition.id, true, ath.seed, 0).subscribe((res) => {
                   if(res['message'] != 'OK') {
                     this.errorMessage = "Error ocured";
                   }
@@ -169,8 +167,7 @@ export class CompetitionFormationComponent implements OnInit {
               }
               else if(!ath.newCompetitions.includes(this.competition.id) && ath.competitions.includes(this.competition.id)) {
                 //remove
-                console.log("6");
-                this.competitionService.updateCompeting(ath.id, this.competition.id, false, ath.seed).subscribe((res) => {
+                this.competitionService.updateCompeting(ath.id, this.competition.id, false, ath.seed, 0).subscribe((res) => {
                   if(res['message'] != 'OK') {
                     this.errorMessage = "Error ocured";
                   }
@@ -180,7 +177,6 @@ export class CompetitionFormationComponent implements OnInit {
           });
         });
         if(this.delegate.id != this.competition.idDelegate) {
-          console.log("7");
           this.competitionService.updateDelegate(this.competition.id, this.delegate.id).subscribe((res) => {
             if(res['message'] != 'OK') {
               this.errorMessage = "Error ocured";

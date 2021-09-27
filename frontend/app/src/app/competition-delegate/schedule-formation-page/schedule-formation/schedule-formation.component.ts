@@ -21,8 +21,7 @@ import { Participating } from 'src/app/model/participating.model';
 })
 export class ScheduleFormationComponent implements OnInit {
 
-  constructor(private competitionService: CompetitionService,
-              private athleteService: AthleteService, private sportEventService: SportEventService,
+  constructor(private competitionService: CompetitionService, private sportEventService: SportEventService,
               private router: Router) { }
 
   ngOnInit(): void {
@@ -50,7 +49,7 @@ export class ScheduleFormationComponent implements OnInit {
       this.events.forEach(ev => {
         console.log(ev.date, ev.time);
         if(ev.date == null || ev.time == null) {
-          this.errorMessage = "You must set date and time of events";
+          //this.errorMessage = "You must set date and time of events";
         }
         else if(ev.date < this.competition.startDate || ev.date > this.competition.endDate) {
           this.errorMessage = "Date of events must be in between start and end date of competition";
@@ -103,6 +102,13 @@ export class ScheduleFormationComponent implements OnInit {
       this.events.forEach(ev => {
         ev.competitionPeriod = this.competition.startDate + " - " + this.competition.endDate;
       });
+      this.events.sort((a, b) => {
+        if(a.date > b.date) return 1;
+        if(a.date < b.date) return -1;
+        if(a.time > b.time) return 1;
+        if(a.time < b.time) return -1;
+        return 0;
+      })
     })
   }
 }

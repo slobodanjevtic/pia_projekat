@@ -9,6 +9,9 @@ let Competing = new Schema({
     idCompetition: {
         type: Number
     },
+    place: {
+        type: Number
+    },
     seed: {
         type: Number
     }

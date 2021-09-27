@@ -9,6 +9,9 @@ let SportEvent = new Schema({
     round: {
         type: Number
     },
+    series: {
+        type: Number
+    },
     date: {
         type: String
     },

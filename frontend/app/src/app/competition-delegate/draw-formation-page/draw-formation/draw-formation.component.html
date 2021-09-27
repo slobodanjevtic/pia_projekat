@@ -24,14 +24,16 @@
   <tr>
     <td>Event</td>
     <td>| Round</td>
+    <td>| Series</td>
     <td>| Athlete</td>
   </tr>
 
-  <tr *ngFor="let ath of groupAthletes">
-    <ng-container *ngIf="ath.event != null">
-      <td>{{ath.event}}</td>
-      <td>| {{ath.round}}</td>
-      <td>| {{ath.name}} {{ath.surname}}</td>
+  <tr *ngFor="let par of participntes">
+    <ng-container *ngIf="par.idEvent != null">
+      <td>{{par.idEvent}}</td>
+      <td>| {{par.round}}</td>
+      <td>| {{par.series}}</td>
+      <td>| {{par.athlete}}</td>
     </ng-container>
   </tr>
 

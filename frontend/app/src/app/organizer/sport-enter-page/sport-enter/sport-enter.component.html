@@ -12,6 +12,20 @@
     </td>
   </tr>
   <tr>
+    <td>Result format:</td>
+    <td>
+      <select id='format' name='format' [(ngModel)]='resultFormat'>
+        <option value="0" selected>SS,TT</option>
+        <option value="1">MM:SS,TT</option>
+        <option value="2">HH:MM:SS</option>
+        <option value="3">M,CM</option>
+        <option value="4">MM,CM</option>
+        <option value="5">DDD,D</option>
+        <option value="6">D</option>
+      </select>
+    </td>
+  </tr>
+  <tr>
     <td>Sport:</td>
     <td>
       <select id='sport' name='sport' [(ngModel)]='sport' (change)="selectFirstDiscipline()">
