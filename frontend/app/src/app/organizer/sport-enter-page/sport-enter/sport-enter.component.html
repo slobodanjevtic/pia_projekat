@@ -53,6 +53,7 @@
     </td>
   </tr>
 </table>
+<span class="error">{{errorMessage}}</span>
 
 <br/>
 
@@ -65,7 +66,7 @@
       <td *ngIf="dis.status == 1">{{dis.sport}}</td>
       <td *ngIf="dis.status == 1">| {{dis.name}}</td>
       <td *ngIf="dis.status == 1">
-        <button (click)='remove(dis.name)'>Remove</button>
+        <button (click)='remove(dis)'>Remove</button>
       </td>
   </tr>
 </table>

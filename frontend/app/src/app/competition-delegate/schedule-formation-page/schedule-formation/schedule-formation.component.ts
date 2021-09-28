@@ -42,7 +42,13 @@ export class ScheduleFormationComponent implements OnInit {
   errorMessage: string;
 
   save() {
-    if(this.isOverlapping()) {
+    if(this.competition.status == 0) {
+      this.errorMessage = "Competition is still open form entry";
+    }
+    else if(this.competition.status == 2) {
+      this.errorMessage = "This competition is finished";
+    }
+    else if(this.isOverlapping()) {
       this.errorMessage = "Events on same location cannot begin at same date and time";
     }
     else {

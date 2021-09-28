@@ -8,6 +8,7 @@ import { SportService } from 'src/app/service/sport.service';
 import { AthleteService } from 'src/app/service/athlete.service';
 import { Registered } from 'src/app/model/registered.model';
 import { CompetitionService } from 'src/app/service/competition.service';
+import { Competition } from 'src/app/model/competition.model';
 
 @Component({
   selector: 'app-team-athlet-register',
@@ -50,22 +51,30 @@ export class TeamAthletRegisterComponent implements OnInit {
         this.errorMessage = "You have to set all data";
     }
     else {
-      if(this.alreadyCompeting()) {
-        this.errorMessage = "Athlete is already compiting in this discipline";
-      }
-      else {
-        this.athleteService.insertAthlete(this.discipline, this.gender, this.name, this.surname,
-                                          parseInt(this.idAthlete), this.user.nation)
-                                  .subscribe((res) => {
-                                    if(res['message'] == 'OK') {
-                                      this.getAthletesForNation();
-                                    }
-                                    else {
-                                      this.errorMessage = res['message'];
-                                    }
-                                  });
-        this.errorMessage = null;
-      }
+      this.competitionService.getCompetition(this.discipline, this.gender).subscribe((comp: Competition) => {
+        if(comp.status == 0) {
+          if(this.alreadyCompeting()) {
+            this.errorMessage = "Athlete is already compiting in this discipline";
+          }
+          else {
+            this.athleteService.insertAthlete(this.discipline, this.gender, this.name, this.surname,
+                                              parseInt(this.idAthlete), this.user.nation)
+                                      .subscribe((res) => {
+                                        if(res['message'] == 'OK') {
+                                          this.getAthletesForNation();
+                                        }
+                                        else {
+                                          this.errorMessage = res['message'];
+                                        }
+                                      });
+            this.errorMessage = null;
+          }
+        }
+        else {
+          this.errorMessage = "Competition registration is finished";
+        }
+      })
+
 
     }
 

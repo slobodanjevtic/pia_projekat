@@ -630,6 +630,39 @@ router.route('/getEvents').post((req, res) => {
   let location = req.body.location;
 });
 
+router.route('/updateStatus').post((req, res) => {
+  let idCompetition = req.body.idCompetition;
+  let status = req.body.status;
+
+  competition.collection.updateOne({'id': idCompetition}, { $set: {'status': status}});
+  res.json({'message': 'OK'});
+});
+
+router.route('/getCompetition').post((req, res) => {
+  let dis = req.body.discipline;
+  let gender = req.body.gender;
+
+  discipline.findOne({'name': dis}, (err, d) => {
+    if(err) {
+      console.log(err);
+      res.status(400);
+    }
+    else {
+      competition.findOne({'idDiscipline': d.get('id'), 'gender': gender}, (err, comp) => {
+        if(err) {
+          console.log(err);
+          res.status(400);
+        }
+        else {
+          res.json(comp);
+        }
+      })
+    }
+  });
+
+});
+
+
 
 router.route('/updateParticipating').post((req, res) => {
   let idAthlete = req.body.idAthlete;
@@ -637,6 +670,36 @@ router.route('/updateParticipating').post((req, res) => {
   let result = req.body.result;
 
   participating.collection.updateOne({'idAthlete': idAthlete, 'idEvent': idEvent}, { $set: {'result': result}});
+  res.json({'message': 'OK'});
+});
+
+router.route('/setResults').post((req, res) => {
+  let participantes = req.body.participantes;
+  let event: number;
+
+  participantes.forEach((par: any) => {
+    event = par['idEvent'];
+    participating.collection.updateOne({'idAthlete': par['idAthlete'], 'idEvent': par['idEvent']}, { $set: {'result': par['result']}});
+    if(par['place'] == 1) {
+      athlete.collection.updateOne({'id': par['idAthlete']}, { $inc: { 'gold': 1}});
+    }
+    else if(par['place'] == 2) {
+      athlete.collection.updateOne({'id': par['idAthlete']}, { $inc: { 'silver': 1}});
+    }
+    else if(par['place'] == 3) {
+      athlete.collection.updateOne({'id': par['idAthlete']}, { $inc: { 'bronze': 1}});
+    }
+  });
+  sport_event.findOne({'id': event}, (err, ev) => {
+    if(err) {
+      console.log(err);
+      res.status(400);
+    }
+    else {
+      competition.collection.updateOne({'id': ev.get('idCompetition')}, { $set: {'status': 2}});
+    }
+  })
+
   res.json({'message': 'OK'});
 });
 
@@ -759,9 +822,37 @@ router.route('/updateDiscipline').post((req, res) => {
   let status = req.body.status;
   let regex = req.body.regex;
 
-  console.log(regex);
-  discipline.collection.updateOne({'name': dis}, { $set: {'status': status, 'resultFormat': regex}});
-  res.json({'message': 'OK'});
+  if(status == 0) {
+    discipline.findOne({'name': dis}, (err, d) => {
+      if(err) {
+        console.log(err);
+        res.status(400);
+      }
+      else {
+  
+        competition.findOne({'idDiscipline': d.get('id')}, (err, comp) => {
+          if(err) {
+            console.log(err);
+            res.status(400);
+          }
+          else {
+            if(comp != null){
+              res.json({'message': 'Cannot remove started discipline'});
+            }
+            else {
+              discipline.collection.updateOne({'name': dis}, { $set: {'status': status, 'resultFormat': regex}});
+              res.json({'message': 'OK'});
+            }
+          }
+        })
+      }
+    })
+  }
+  else {
+    discipline.collection.updateOne({'name': dis}, { $set: {'status': status, 'resultFormat': regex}});
+    res.json({'message': 'OK'});
+  }
+
 });
 
 router.route('/login').post((req, res) => {
@@ -1052,6 +1143,7 @@ router.route('/getCompetitions').get((req, res) => {
             "endDate" : "$c.endDate", 
             "location" : "$l.name", 
             "format" : "$c.format", 
+            "status" : "$c.status", 
             "idDelegate" : "$de.idDelegate", 
             "_id" : 0
         }
@@ -1232,6 +1324,7 @@ router.route('/getAllCompetitionsForDelegate').post((req, res) => {
                 "endDate" : "$c.endDate", 
                 "location" : "$l.name", 
                 "format" : "$c.format", 
+                "status" : "$c.status", 
                 "resultFormat" : "$d.resultFormat", 
                 "idDelegate" : "$de.idDelegate", 
                 "_id" : 0

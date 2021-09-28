@@ -80,6 +80,7 @@
       <td>| Start date</td>
       <td>| End date</td>
       <td>| Location</td>
+      <td></td>
   </tr>
   <tr *ngFor="let comp of competitions">
     <td>{{comp.sport}}</td>
@@ -88,6 +89,9 @@
     <td>| {{comp.startDate}}</td>
     <td>| {{comp.endDate}}</td>
     <td>| {{comp.location}}</td>
+    <td>
+      <button [disabled]="comp.status > 0" id="{{comp.id}}" name="{{comp.id}}" (click)="finishRegistration(comp)">Finish registration</button>
+    </td>
   </tr>
 
 </table>

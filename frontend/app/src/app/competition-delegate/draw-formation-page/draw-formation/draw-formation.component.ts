@@ -49,28 +49,37 @@ export class DrawFormationComponent implements OnInit {
   errorMessage: string;
 
   generate() {
-    switch (parseInt(this.competition.format)) {
-      case 1:
-        this.generateGroup(1);
-        break;
-      case 2:
-        this.generateGroup(3);
-        break;
-      case 3:
-        this.generateGroup(6);
-        break;
-      case 4:
-        this.generateDraw(4);
-        break;
-      case 5:
-        this.generateDraw(8);
-        break;
-      case 6:
-        this.generateDraw(16);
-        break;
-      default:
-        break;
+    if(this.competition.status == 0) {
+      this.errorMessage = "Competition is still open form entry";
     }
+    else if(this.competition.status == 2) {
+      this.errorMessage = "This competition is finished";
+    }
+    else {
+      switch (parseInt(this.competition.format)) {
+        case 1:
+          this.generateGroup(1);
+          break;
+        case 2:
+          this.generateGroup(3);
+          break;
+        case 3:
+          this.generateGroup(6);
+          break;
+        case 4:
+          this.generateDraw(4);
+          break;
+        case 5:
+          this.generateDraw(8);
+          break;
+        case 6:
+          this.generateDraw(16);
+          break;
+        default:
+          break;
+      }
+    }
+
   }
 
   generateGroup(series: number) {

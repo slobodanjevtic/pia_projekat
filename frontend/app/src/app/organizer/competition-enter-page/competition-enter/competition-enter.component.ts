@@ -67,6 +67,14 @@ export class CompetitionEnterComponent implements OnInit {
       }
   }
 
+  finishRegistration(comp: Competition) {
+    this.competitionService.updateStatus(comp.id, 1).subscribe((res) => {
+      if(res['message'] == 'OK') {
+
+      }
+    })
+  }
+
   getAllSports() {
     this.sportService.getAllSports().subscribe((spr: Sport[]) => {
       this.sports = spr;

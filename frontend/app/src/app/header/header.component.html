@@ -29,7 +29,6 @@
     </h4>
     <h4 *ngIf="user.type == 'national_delegate'">
       <a routerLink="team-athlet-register">Register</a>
-      <td>{{user.name}} {{user.surname}}</td>
       <button (click)="logout()">Logout</button>
       <td>
         {{user.name}} {{user.surname}}

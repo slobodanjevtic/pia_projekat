@@ -33,7 +33,7 @@
     <td>| {{par.series}}</td>
     <td>| {{par.athlete}}</td>
     <td *ngIf="i < (seriesDone+1) * numOfAthletes">
-      <input type="text" [value]="par.result" [(ngModel)]="par.result">
+      <input disabled='{{competition.status == 2}}' type="text" [value]="par.result[0]" [(ngModel)]="par.result[0]">
     </td>
 
   </tr>

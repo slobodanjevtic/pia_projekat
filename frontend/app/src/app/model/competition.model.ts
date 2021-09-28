@@ -5,6 +5,7 @@ export class Competition {
   gender: string;
   sport: string;
   format: string;
+  status: number;
   resultFormat: string;
   discipline: string;
   location: string;

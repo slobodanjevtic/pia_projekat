@@ -21,7 +21,7 @@ export class SportService {
     const data = {
       discipline: discipline,
       status: status,
-      regex
+      regex: regex
     }
 
     return this.http.post(`${this.uri}/updateDiscipline`, data);

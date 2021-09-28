@@ -63,44 +63,56 @@ export class ResultEnterComponent implements OnInit {
   }
 
   save() {
-    var regex: RegExp;
-    regex = new RegExp(this.competition.resultFormat);
-
-    this.participantes.sort((a, b) => {
-      if(a.result > b.result) return 1;
-      if(a.result < b.result) return -1;
-      return 0;
-    });
-
-    if(this.areResultsGood(parseInt(this.competition.format))) {
-      this.participantes.forEach(ath => {
-        if(ath.result != null ) {
-          if(regex.test(ath.result[0])) {
-            console.log(ath.id, ath.idEvent, ath.result);
-            this.sportEventService.updateParticipating(ath.id, ath.idEvent, ath.result).subscribe((res) => {
-              if(res['message'] != 'OK') {
-                this.errorMessage = "Something went wrong";
-              }
-            })
-            this.errorMessage = null;
+    if(this.competition.status == 2) {
+      this.errorMessage = "This competition is finished";
+    }
+    else {
+      if(this.areResultsGood(parseInt(this.competition.format))) {
+        this.sportEventService.setResults(this.participantes).subscribe((res) => {
+          if(res['message'] != 'OK') {
+            this.errorMessage = "Something went wrong";
           }
           else {
-            this.errorMessage = "Results must be entered in right format";
+            this.getAllCompetitionsForDelegate();
           }
+        })
+        this.errorMessage = null;
+      }
+      else {
+        this.errorMessage = "Results must be entered in right format";
+      }
 
-        }
-      });
     }
 
+
+  }
+
+  sortByResult() {
+    this.participantes.sort((a, b) => {
+      if(a.result[0] > b.result[0]) return 1;
+      if(a.result[0] < b.result[0]) return -1;
+      return 0;
+    });
   }
 
   areResultsGood(format: number) : boolean {
 
+    var regex: RegExp;
+    regex = new RegExp(this.competition.resultFormat);
+
+    for (let i = 0; i < this.participantes.length; i++) {
+      const par = this.participantes[i];
+      console.log(par.result[0]);
+      if(!regex.test(par.result[0])) {
+        return false;
+      }
+    }
+
     switch (format) {
       case 1:
+        this.sortByResult();
         this.setPlaces();
-        this.generateNewRounds();
-        break;
+        return true;
       case 2:
         break;
       case 3:
@@ -121,7 +133,7 @@ export class ResultEnterComponent implements OnInit {
     for (let i = 1; i < this.participantes.length; i++) {
       const ath2 = this.participantes[i];
 
-      if(ath1.result == ath2.result) {
+      if(ath1.result[0] == ath2.result[0]) {
         ath2.place = ath1.place;
       }
       else {

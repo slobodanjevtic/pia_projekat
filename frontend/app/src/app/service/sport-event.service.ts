@@ -70,6 +70,14 @@ export class SportEventService {
     return this.http.post(`${this.uri}/getAllParticipants`, data);
   }
 
+  setResults(participantes) {
+    const data = {
+      participantes: participantes
+    }
+
+    return this.http.post(`${this.uri}/setResults`, data);
+  }
+
   updateParticipating(idAthlete, idEvent, result) {
     const data = {
       idAthlete: idAthlete,

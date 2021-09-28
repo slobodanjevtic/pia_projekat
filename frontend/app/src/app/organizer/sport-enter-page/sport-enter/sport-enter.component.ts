@@ -80,13 +80,20 @@ export class SportEnterComponent implements OnInit {
           }
         })
       }
+      this.errorMessage = null;
     }
 
   }
 
-  remove(dis: string) {
-    this.sportService.updateDiscipline(dis, 0, null).subscribe(() => {
-      this.getAllDisciplines();
+  remove(dis: Discipline) {
+    this.sportService.updateDiscipline(dis.name, 0, null).subscribe((res) => {
+      if(res['message'] != 'OK') {
+        this.errorMessage = res['message'];
+      }
+      else {
+        this.getAllDisciplines();
+        this.errorMessage = null;
+      }
     })
   }
 

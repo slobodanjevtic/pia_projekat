@@ -43,6 +43,24 @@ export class CompetitionService {
     return this.http.post(`${this.uri}/updateDelegate`, data);
   }
 
+  getCompetition(discipline, gender) {
+    const data = {
+      discipline: discipline,
+      gender: gender
+    }
+
+    return this.http.post(`${this.uri}/getCompetition`, data);
+  }
+
+  updateStatus(idCompetition, status) {
+    const data = {
+      idCompetition: idCompetition,
+      status: status
+    }
+
+    return this.http.post(`${this.uri}/updateStatus`, data);
+  }
+
   insertCompeting(sport, discipline, gender, idAthlete) {
     const data = {
       sport: sport,
