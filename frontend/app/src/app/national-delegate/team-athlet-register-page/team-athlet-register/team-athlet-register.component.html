@@ -56,7 +56,13 @@
   <tr>
     <td></td>
     <td>
-      <button (click)='uploadFile()'>Upload file</button>
+      <input type="file" id="file" (change)="uploadFile($event)">
+    </td>
+  </tr>
+  <tr>
+    <td></td>
+    <td>
+      <button (click)="sendFile()">Upload</button>
     </td>
   </tr>
 </table>

@@ -5,7 +5,6 @@ import { AppComponent } from './app.component';
 import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import {MatPaginatorModule} from '@angular/material/paginator'
 
 import { LoginComponent } from './unregistered-user/login-page/login.component';
 import { RegisterComponent } from './unregistered-user/register-page/register.component';
@@ -56,8 +55,7 @@ import { HeaderComponent } from './header/header.component';
     AppRoutingModule,
     BrowserAnimationsModule,
     FormsModule,
-    HttpClientModule,
-    MatPaginatorModule
+    HttpClientModule
   ],
   providers: [],
   bootstrap: [AppComponent]

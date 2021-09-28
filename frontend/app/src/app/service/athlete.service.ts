@@ -38,6 +38,15 @@ export class AthleteService {
     return this.http.post(`${this.uri}/insertAthlete`, data);
   }
 
+  insertAthletesFromFile(file, nation) {
+    const data = {
+      file: file,
+      nation: nation
+    }
+
+    return this.http.post(`${this.uri}/insertAthleteFromFile`, data);
+  }
+
   removeAthlete(idAthlete) {
     const data = {
       idAthlete: idAthlete

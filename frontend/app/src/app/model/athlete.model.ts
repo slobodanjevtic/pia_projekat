@@ -5,8 +5,11 @@ export class Athlete {
   name: string;
   surname: string;
   gender: string;
-  idSport: number;
   sport: string;
+  discipline: string;
+  nation: string;
+
+  idSport: number;
   disciplines: Array<number>;
   competitions: Array<number>;
   newCompetitions: Array<number>;
@@ -15,7 +18,6 @@ export class Athlete {
   series: number;
   result: string;
   place: number;
-  nation: string;
   gold: number;
   silver: number;
   bronze: number;

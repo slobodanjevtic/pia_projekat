@@ -42,6 +42,7 @@ export class TeamAthletRegisterComponent implements OnInit {
   name: string;
   surname: string;
   idAthlete: string;
+  file: File;
 
   errorMessage: string;
 
@@ -98,9 +99,27 @@ export class TeamAthletRegisterComponent implements OnInit {
 
   }
 
-  uploadFile() {
+  uploadFile(event: any) {
+    this.file = event.target.files[0];
+    const fileReader = new FileReader();
 
+    fileReader.readAsText(this.file);
+    fileReader.onload = function (e) {
+
+      localStorage.setItem("file", <string>fileReader.result);
+    };
   }
+
+  sendFile() {
+    let ath: any[] = JSON.parse(<string>localStorage.getItem('file'));
+
+    this.athleteService.insertAthletesFromFile(ath, this.user.nation).subscribe((res) => {
+      if(res['message'] == 'OK') {
+        alert("File uploaded successfully");
+      }
+    })
+  }
+
 
   removeAthlete(athlete: Athlete, dis: number) {
     this.athleteService.removeDisciplineFromAthlete(athlete.id, dis).subscribe((res) => {
@@ -164,4 +183,5 @@ export class TeamAthletRegisterComponent implements OnInit {
 
     })
   }
+
 }

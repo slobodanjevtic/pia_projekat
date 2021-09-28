@@ -662,7 +662,34 @@ router.route('/getCompetition').post((req, res) => {
 
 });
 
+router.route('/insertAthleteFromFile').post((req, res) => {
+  const file = req.body.file;
+  const nat = req.body.nation;
 
+  nation.findOne({'name': nat}, (err, n) => {
+    if(err) {
+      console.log(err);
+      res.status(400);
+    }
+    else {
+      file.forEach((f: any) => {
+        let spr = f['sport'];
+        let dis = f['discipline'];
+
+        discipline.findOne({'name': dis}, (err, d) => {
+          athlete.collection.insertOne({'id': f['id'], 'name': f['name'], 'surname': f['surname'],
+                                              'gender': f['gender'], 'idNation': n.get('id'), 
+                                              'idSport': d.get('idSport'), 
+                                              'gold': 0, 'silver': 0, 'bronze': 0});
+          registered.collection.insertOne({'idAthlete': f['id'], 'idDiscipline': d.get('id')}); 
+        })
+        
+      });
+      res.json({'message': 'OK'});
+    }
+  })
+
+});
 
 router.route('/updateParticipating').post((req, res) => {
   let idAthlete = req.body.idAthlete;
