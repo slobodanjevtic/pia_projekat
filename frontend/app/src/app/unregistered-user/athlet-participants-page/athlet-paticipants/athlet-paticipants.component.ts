@@ -24,6 +24,7 @@ export class AthletPaticipantsComponent implements OnInit {
   }
 
   athlets: Athlete[];
+  athletsToShow: Athlete[];
   nations: Nation[];
   sports: Sport[];
 
@@ -33,8 +34,16 @@ export class AthletPaticipantsComponent implements OnInit {
   gender: string;
   onlyMedalists: boolean;
 
+  curPage: number = 1;
+  numOfPages: number = 1;
+  minIndex: number = 0;
+  maxIndex: number = 20;
+  numToShow: number = 20;
+  j: number = 0;
+
   search() {
     console.log(this.name, this.nation, this.sport, this.gender, this.onlyMedalists);
+    this.athletsToShow = [];
     this.athlets.forEach(ath => {
       if((ath.name.includes(this.name) || ath.surname.includes(this.name) || this.name == null || this.name == '') &&
           (ath.sport == this.sport || this.sport == 'all') &&
@@ -42,11 +51,14 @@ export class AthletPaticipantsComponent implements OnInit {
           (ath.gender == this.gender || this.gender == null) &&
           ((this.onlyMedalists && (ath.gold+ath.silver+ath.bronze) > 0) || !this.onlyMedalists)) {
               ath.show = true;
+              this.athletsToShow.push(ath);
       }
       else {
         ath.show = false;
       }
     });
+    this.setPagination();
+    this.curPage = 1;
     console.log(this.athlets);
   }
 
@@ -57,7 +69,19 @@ export class AthletPaticipantsComponent implements OnInit {
         a.show = true;
       });
       console.log(this.athlets);
+      this.athletsToShow = this.athlets;
+      this.setPagination();
+      this.curPage = 1;
     })
+  }
+
+  setPagination(){
+    this.numOfPages = 0;
+    for (let i = 0; i < this.athletsToShow.length; i+=this.numToShow) {
+      this.numOfPages++;
+    }
+    this.minIndex = 0;
+    this.maxIndex = this.numToShow;
   }
 
   getAllNations() {
@@ -70,5 +94,21 @@ export class AthletPaticipantsComponent implements OnInit {
     this.sportService.getAllSports().subscribe((spo: Sport[]) => {
       this.sports = spo;
     })
+  }
+
+  next() {
+    if(this.athletsToShow.length > this.maxIndex) {
+      this.curPage++;
+      this.minIndex += this.numToShow;
+      this.maxIndex += this.numToShow;
+    }
+  }
+
+  prev() {
+    if(this.minIndex > 0) {
+      this.curPage--;
+      this.minIndex -= this.numToShow;
+      this.maxIndex -= this.numToShow;
+    }
   }
 }

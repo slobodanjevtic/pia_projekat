@@ -27,14 +27,16 @@
       <td>| Athlete</td>
       <td>| Result(format: {{regexText.get(competition.resultFormat)}})</td>
   </tr>
-  <tr *ngFor="let par of participantes, let i = index">
-    <td>{{par.idEvent}}</td>
-    <td>| {{par.round}}</td>
-    <td>| {{par.series}}</td>
-    <td>| {{par.athlete}}</td>
-    <td *ngIf="i < (seriesDone+1) * numOfAthletes">
-      <input disabled='{{competition.status == 2}}' type="text" [value]="par.result[0]" [(ngModel)]="par.result[0]">
-    </td>
+  <ng-container *ngFor="let i of numOfSeries">
+    <tr *ngFor="let par of participantes, let j = index">
+      <td>{{par.idEvent}}</td>
+      <td>| {{par.round}}</td>
+      <td>| {{i+1}}</td>
+      <td>| {{par.athlete}}</td>
+      <td *ngIf="i <= getSeriesDone()">
+        <input disabled='{{competition.status == 2}}' type="text" [value]="par.result[i]" [(ngModel)]="par.result[i]">
+      </td>
+    </tr>
 
-  </tr>
+  </ng-container>
 </table>

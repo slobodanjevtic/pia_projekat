@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { Nation } from 'src/app/model/nation.model';
 import { NationService } from 'src/app/service/nation.service';
 import { Router } from '@angular/router';

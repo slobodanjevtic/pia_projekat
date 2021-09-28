@@ -4,6 +4,7 @@ export class Participating {
   idAthlete: number;
   athlete: string;
   result: Array<string>;
+  score: string;
   round: number;
   series: number;
   place: number;

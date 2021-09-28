@@ -70,9 +70,10 @@ export class SportEventService {
     return this.http.post(`${this.uri}/getAllParticipants`, data);
   }
 
-  setResults(participantes) {
+  setResults(participantes, finish) {
     const data = {
-      participantes: participantes
+      participantes: participantes,
+      finish: finish
     }
 
     return this.http.post(`${this.uri}/setResults`, data);

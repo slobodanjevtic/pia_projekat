@@ -48,6 +48,7 @@
     </td>
   </tr>
 </table>
+
 <br/>
 <table>
   <tr>
@@ -59,14 +60,37 @@
       <td>| Bronze medals</td>
       <td>| Total medals</td>
   </tr>
-  <tr *ngFor="let ath of athlets, let i = index">
-    <td *ngIf="ath.show">{{i + 1}}</td>
-    <td *ngIf="ath.show">| {{ath.nation}}</td>
-    <td *ngIf="ath.show">| {{ath.name}} {{ath.surname}}</td>
-    <td *ngIf="ath.show">| {{ath.gold}}</td>
-    <td *ngIf="ath.show">| {{ath.silver}}</td>
-    <td *ngIf="ath.show">| {{ath.bronze}}</td>
-    <td *ngIf="ath.show">| {{ath.gold + ath.silver + ath.bronze}}</td>
+  <tr *ngFor="let ath of athletsToShow, let i = index">
+    <ng-container *ngIf="i < maxIndex && i >= minIndex && ath.show">
+      <td>{{i + 1}}</td>
+      <td>| {{ath.nation}}</td>
+      <td>| {{ath.name}} {{ath.surname}}</td>
+      <td>| {{ath.gold}}</td>
+      <td>| {{ath.silver}}</td>
+      <td>| {{ath.bronze}}</td>
+      <td>| {{ath.gold + ath.silver + ath.bronze}}</td>
+    </ng-container>
+
   </tr>
 
 </table>
+<table>
+  <tr>
+    <td>
+      <button id="prev" (click)="prev()">Previous</button>
+    </td>
+    <td>
+      <button id="next" (click)="next()"> Next</button>
+    </td>
+    <td>
+      Page {{curPage}} of {{numOfPages}}
+    </td>
+    <td>
+      <input type="radio" id="pag" name="pag" [value]="20" [checked] [(ngModel)]="numToShow" (change)="setPagination()"> 20
+      <input type="radio" id="pag" name="pag" [value]="50" [(ngModel)]="numToShow" (change)="setPagination()"> 50
+      <input type="radio" id="pag" name="pag" [value]="100" [(ngModel)]="numToShow" (change)="setPagination()"> 100
+    </td>
+  </tr>
+</table>
+
+

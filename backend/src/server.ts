@@ -675,20 +675,24 @@ router.route('/updateParticipating').post((req, res) => {
 
 router.route('/setResults').post((req, res) => {
   let participantes = req.body.participantes;
+  let finish = req.body.finish;
   let event: number;
 
   participantes.forEach((par: any) => {
     event = par['idEvent'];
     participating.collection.updateOne({'idAthlete': par['idAthlete'], 'idEvent': par['idEvent']}, { $set: {'result': par['result']}});
-    if(par['place'] == 1) {
-      athlete.collection.updateOne({'id': par['idAthlete']}, { $inc: { 'gold': 1}});
+    if(finish) {
+      if(par['place'] == 1) {
+        athlete.collection.updateOne({'id': par['idAthlete']}, { $inc: { 'gold': 1}});
+      }
+      else if(par['place'] == 2) {
+        athlete.collection.updateOne({'id': par['idAthlete']}, { $inc: { 'silver': 1}});
+      }
+      else if(par['place'] == 3) {
+        athlete.collection.updateOne({'id': par['idAthlete']}, { $inc: { 'bronze': 1}});
+      }
     }
-    else if(par['place'] == 2) {
-      athlete.collection.updateOne({'id': par['idAthlete']}, { $inc: { 'silver': 1}});
-    }
-    else if(par['place'] == 3) {
-      athlete.collection.updateOne({'id': par['idAthlete']}, { $inc: { 'bronze': 1}});
-    }
+
   });
   sport_event.findOne({'id': event}, (err, ev) => {
     if(err) {
@@ -1402,11 +1406,15 @@ router.route('/insertParticipating').post((req, res) => {
                 });
               }
               else {
+                let result: string[] = [];
+                for (let i = 0; i < series; i++) {
+                  result.push(null);
+                }
                 id++;
                 sport_event.collection.insertOne({'id': id, 'round': round, 'series': series, 'date': null, 'time': null, 'idCompetition': idCompetition, 'idLocation': comp.get('idLocation')});
                 athletes.forEach((ath: any) => {
                   if(ath != null) {
-                    participating.collection.insertOne({'idEvent': id, 'idAthlete': ath, 'result': [null]});
+                    participating.collection.insertOne({'idEvent': id, 'idAthlete': ath, 'result': result});
                   }
                 });
 

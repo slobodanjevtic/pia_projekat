@@ -47,7 +47,7 @@ export class SportEnterComponent implements OnInit {
     this.resultFormatRegex.push(/^\d\d:\d\d:\d\d$/);
     this.resultFormatRegex.push(/^\d,\d\d$/);
     this.resultFormatRegex.push(/^\d\d,\d\d$/);
-    this.resultFormatRegex.push(/^\d\d\d,\d\d$/);
+    this.resultFormatRegex.push(/^\d\d\d\.\d$/);
     this.resultFormatRegex.push(/^\d$/);
 
   }
